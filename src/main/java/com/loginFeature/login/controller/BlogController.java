@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/blogs")
@@ -30,4 +31,27 @@ public class BlogController {
         return blogService.getAllBlogs();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBlog(@PathVariable UUID id, @RequestBody Blog updatedBlog, Authentication authentication){
+        Blog blogById = blogService.getBlogById(id);
+        if(blogById == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(!blogById.getAuthor().equals(authentication.getName())){
+            return ResponseEntity.status(403).body("You are not authenticated to update this blog.");
+        }
+        updatedBlog.setId(id);
+        updatedBlog.setAuthor(blogById.getAuthor());
+
+        Blog blog = blogService.updateBlog(updatedBlog);
+
+        return ResponseEntity.ok(blog);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBlog(@PathVariable UUID id, Authentication authentication) {
+
+        blogService.deleteBlog(id);
+        return ResponseEntity.ok("The blog has been deleted.");
+    }
 }

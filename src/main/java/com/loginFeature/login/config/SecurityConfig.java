@@ -18,7 +18,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf -> csrf.disable()).
                 authorizeHttpRequests(auth -> auth.requestMatchers("/api/public/register").permitAll().
-                        requestMatchers("/api/blogs").permitAll().requestMatchers("/api/blogs/**").authenticated()
+                        requestMatchers("/api/blogs").permitAll().requestMatchers("/api/blogs/**").authenticated().
+                        requestMatchers("/api/comments/**").authenticated()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();

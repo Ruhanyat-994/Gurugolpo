@@ -5,6 +5,9 @@ import com.loginFeature.login.entity.Blog;
 import com.loginFeature.login.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BlogRepository extends JpaRepository<Blog, Long> {
+import java.util.UUID;
+
+public interface BlogRepository extends JpaRepository<Blog, UUID> {
+
 
 }

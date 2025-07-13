@@ -1,5 +1,6 @@
 package com.loginFeature.login.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -16,6 +17,7 @@ public class User {
     @Id
     private String username;
 
+    @JsonIgnore
     private String password;
     private String role;
 
