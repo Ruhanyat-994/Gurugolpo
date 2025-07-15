@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -31,6 +32,26 @@ public class CommentService {
         comment.setContent(content);
         return commentRepository.save(comment);
 
+    }
+    public Comment updateComment(UUID commentId, String newContent, String username){
+        Comment comment = commentRepository.findById(commentId).
+                orElseThrow(()-> new RuntimeException("Comment not Found!"));
+
+        if(!comment.getUser().getUsername().equals(username)){
+            throw new RuntimeException("Unauthorize : you can only edit your own comments!");
+        }
+        comment.setContent(newContent);
+        return commentRepository.save(comment);
+    }
+
+    public void deleteComment(UUID commentId, String username){
+        Comment comment = commentRepository.findById(commentId).
+                orElseThrow(()-> new RuntimeException("Comment not Found"));
+
+        if(!comment.getUser().getUsername().equals(username)){
+            throw new RuntimeException("Unauthorize : you can only delete your own comments!");
+        }
+         commentRepository.delete(comment);
     }
 
     public List<Comment> getCommentsForBlog(UUID blogId){

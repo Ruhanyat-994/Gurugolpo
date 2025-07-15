@@ -27,5 +27,24 @@ public class CommentController {
         Comment comment = commentService.addComment(blogId,content, name);
         return ResponseEntity.ok(comment);
     }
+    @PutMapping("/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable UUID commentId,
+                                        @RequestBody Map<String, String> body,
+                                        Authentication authentication){
+        String content = body.get("content");
+        String name = authentication.getName();
+
+        Comment updateComment = commentService.updateComment(commentId,content,name);
+        return ResponseEntity.ok(updateComment);
+
+    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable UUID commentId,
+                                           Authentication authentication){
+        String username = authentication.getName();
+        commentService.deleteComment(commentId,username);
+        return ResponseEntity.noContent().build();
+    }
 
 }

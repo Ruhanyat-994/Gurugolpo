@@ -20,7 +20,7 @@ public class Comment {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "blod_id")
+    @JoinColumn(name = "blog_id")
     @JsonIgnore
     private Blog blog;
 
