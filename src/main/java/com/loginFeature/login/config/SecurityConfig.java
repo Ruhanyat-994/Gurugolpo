@@ -19,7 +19,8 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()).
                 authorizeHttpRequests(auth -> auth.requestMatchers("/api/public/register").permitAll().
                         requestMatchers("/api/blogs").permitAll().requestMatchers("/api/blogs/**").authenticated().
-                        requestMatchers("/api/comments/**").authenticated()
+                        requestMatchers("/api/comments/**").authenticated().
+                        requestMatchers("/api/blogs/**").authenticated()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();

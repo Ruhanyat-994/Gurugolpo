@@ -1,5 +1,6 @@
 package com.loginFeature.login.controller;
 
+import com.loginFeature.login.Dto.BlogDto;
 import com.loginFeature.login.entity.Blog;
 import com.loginFeature.login.repository.BlogRepository;
 import com.loginFeature.login.service.BlogService;
@@ -27,8 +28,14 @@ public class BlogController {
     }
 
     @GetMapping
-    public List<Blog> getAllBlogs(){
-        return blogService.getAllBlogs();
+    public ResponseEntity<?> getAllBlogs(){
+        try {
+            List<BlogDto> blogs = blogService.getAllBlogs();
+            return ResponseEntity.ok(blogs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

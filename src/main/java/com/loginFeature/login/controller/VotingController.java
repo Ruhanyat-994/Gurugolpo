@@ -1,0 +1,36 @@
+package com.loginFeature.login.controller;
+
+import com.loginFeature.login.entity.User;
+import com.loginFeature.login.enums.VoteType;
+import com.loginFeature.login.repository.UserRepsitory;
+import com.loginFeature.login.service.VotingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/blogs/vote")
+public class VotingController {
+
+    @Autowired
+    private VotingService votingService;
+
+    @Autowired
+    private UserRepsitory userRepsitory;
+
+    @PostMapping("/{blogId}/upvote")
+    public ResponseEntity<?> upvote(@PathVariable UUID blogId, Authentication authentication){
+        User user = userRepsitory.findByUsername(authentication.getName());
+        String message = votingService.vote(blogId, user, VoteType.UPVOTE);
+        return ResponseEntity.ok(message);
+    }
+    @PostMapping("/{blogId}/downvote")
+    public ResponseEntity<?> downvote(@PathVariable UUID blogId, Authentication authentication){
+        User user = userRepsitory.findByUsername(authentication.getName());
+        String message = votingService.vote(blogId, user, VoteType.DOWNVOTE);
+        return ResponseEntity.ok(message);
+    }
+}
