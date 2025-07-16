@@ -1,28 +1,38 @@
 package com.loginFeature.login.config;
 
+import com.loginFeature.login.filter.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf -> csrf.disable()).
-                authorizeHttpRequests(auth -> auth.requestMatchers("/api/public/register").permitAll().
+                authorizeHttpRequests(auth -> auth.
+                        requestMatchers("/api/public/register", "/api/auth/login").permitAll().
                         requestMatchers("/api/blogs").permitAll().requestMatchers("/api/blogs/**").authenticated().
-                        requestMatchers("/api/comments/**").authenticated().
-                        requestMatchers("/api/blogs/**").authenticated()
+                        requestMatchers("/api/blogs/**","/api/comments/**").authenticated()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults());
+                        .sessionManagement(config -> config
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        )
+                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
