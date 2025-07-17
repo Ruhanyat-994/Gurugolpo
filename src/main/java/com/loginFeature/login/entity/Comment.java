@@ -1,11 +1,13 @@
 package com.loginFeature.login.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,7 +23,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "blog_id")
-    @JsonIgnore
+    @JsonBackReference
     private Blog blog;
 
     @ManyToOne
@@ -30,6 +32,8 @@ public class Comment {
 
     @Lob
     private String content;
-    @JsonProperty("createdAt")
-    private LocalDateTime localDateTime = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    
 }

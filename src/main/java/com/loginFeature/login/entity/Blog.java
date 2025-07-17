@@ -1,16 +1,14 @@
 package com.loginFeature.login.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.loginFeature.login.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Data
@@ -27,12 +25,13 @@ public class Blog {
     private String content;
     private String author;
 
-    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Comment> comments = new LinkedList<>();
+    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<Comment> comments = new HashSet<>();
 
-    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
-    private List<Voting> votes = new ArrayList<>();
+    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<Voting> votes = new HashSet<>();
 
     public long getUpVote(){
         return votes.stream().filter(v-> v.getVoteType() == VoteType.UPVOTE).count();

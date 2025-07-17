@@ -1,5 +1,6 @@
 package com.loginFeature.login.service;
 
+import com.loginFeature.login.Dto.CommentDto;
 import com.loginFeature.login.entity.Blog;
 import com.loginFeature.login.entity.Comment;
 import com.loginFeature.login.entity.User;
@@ -22,7 +23,15 @@ public class CommentService {
     @Autowired
     private UserRepsitory userRepsitory;
 
-    public Comment addComment(UUID blogId, String content, String username){
+    private CommentDto mapToCommentDto(Comment comment) {
+        return new CommentDto(
+                comment.getId(),
+                comment.getContent(),
+                comment.getUser().getUsername(),
+                comment.getCreatedAt()
+        );
+    }
+    public CommentDto addComment(UUID blogId, String content, String username){
         Blog blog = blogService.getBlogById(blogId);
         User user = userRepsitory.findByUsername(username);
 
@@ -30,7 +39,9 @@ public class CommentService {
         comment.setBlog(blog);
         comment.setUser(user);
         comment.setContent(content);
-        return commentRepository.save(comment);
+        Comment save = commentRepository.save(comment);
+        Comment refreshed = commentRepository.findById(save.getId()).orElseThrow();
+        return mapToCommentDto(refreshed);
 
     }
     public Comment updateComment(UUID commentId, String newContent, String username){

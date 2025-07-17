@@ -1,5 +1,6 @@
 package com.loginFeature.login.controller;
 
+import com.loginFeature.login.Dto.CommentDto;
 import com.loginFeature.login.entity.Comment;
 import com.loginFeature.login.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class CommentController {
         String content = body.get("content");
         String name = authentication.getName();
 
-        Comment comment = commentService.addComment(blogId,content, name);
+        CommentDto comment = commentService.addComment(blogId,content, name);
         return ResponseEntity.ok(comment);
     }
     @PutMapping("/{commentId}")

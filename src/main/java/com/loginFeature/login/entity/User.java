@@ -17,7 +17,7 @@ public class User {
     @Id
     private String username;
 
-    @JsonIgnore
+
     private String password;
     private String role;
 

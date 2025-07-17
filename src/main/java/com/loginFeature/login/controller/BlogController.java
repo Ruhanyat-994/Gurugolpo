@@ -7,16 +7,20 @@ import com.loginFeature.login.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.encrypt.RsaAlgorithm;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/blogs")
 public class BlogController {
     @Autowired
     private BlogService blogService;
+    @Autowired
+    private BlogRepository blogRepository;
+
 
     @PostMapping("/create")
     public ResponseEntity<?> createBlog(@RequestBody Blog blog, Authentication authentication){
@@ -61,4 +65,30 @@ public class BlogController {
         blogService.deleteBlog(id);
         return ResponseEntity.ok("The blog has been deleted.");
     }
+
+    @GetMapping("/{id}/votes")
+    public ResponseEntity<Map<String, Long>> getVoteCount(@PathVariable UUID id){
+        Blog blog = blogRepository.findById(id).orElseThrow(()-> new RuntimeException("Blod not Found"));
+        long upvotes = blog.getUpVote();
+        long downvotes = blog.getDownVote();
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("upvotes", upvotes);
+        response.put("downvotes", downvotes);
+
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/popular")
+    // this will get all the popular post according to the upvotes
+    public ResponseEntity<List<BlogDto>> getPopularPost(){
+        List<BlogDto> blogs = blogService.getAllBlogs();
+        List<BlogDto> sortedBlogs = blogs.stream()
+                .sorted(Comparator.comparingLong(BlogDto::getUpVote).reversed())// blog2 first means from the most to the least votes
+                .toList();
+
+        return ResponseEntity.ok(sortedBlogs);
+
+    }
+
+
 }

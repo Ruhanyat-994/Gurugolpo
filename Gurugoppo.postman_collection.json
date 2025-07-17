@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "f69de4c0-318e-4ac1-9879-cfd1baf84767",
+		"name": "Gurugoppo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44168476",
+		"_collection_link": "https://mianalruhanyat.postman.co/workspace/Mian-Al-Ruhanyat's-Workspace~c446f86d-8b86-426f-80bc-2d810fd7a54b/collection/44168476-f69de4c0-318e-4ac1-9879-cfd1baf84767?action=share&source=collection_link&creator=44168476"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Getting Items",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "JWT Login",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Blogging",
+			"item": [
+				{
+					"name": "Comment",
+					"item": [
+						{
+							"name": "Update Comment",
+							"item": [
+								{
+									"name": "New Request",
+									"request": {
+										"method": "GET",
+										"header": []
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Delete Comment",
+							"item": [
+								{
+									"name": "delete comment",
+									"request": {
+										"method": "GET",
+										"header": []
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Add comment",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Voting",
+					"item": [
+						{
+							"name": "Add Vote",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Vote Count",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "add blog",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "Ruhanyat",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "Ruhanyat",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"How to learn Active Directory in a wrong way\",\r\n  \"content\": \"Why Active Directory?\\n\\nIt is a distributed, hierarchical structure that allows for centralized management of an organization’s resources, including users, computers, groups, network devices, file shares, group policies, devices, and trusts. AD provides authentication and authorization functions within a Windows domain environment.\\n\\nMany of its features are easy to misconfigure due to its backwards compatibility and a lot of the default options are not actually secure. Active Directory (AD) can be generally thought of as a sizeable read-only database accessible by all users in a domain, irrespective of privilege level.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/blogs/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"blogs",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Blog",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update Blog",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Delete BLog",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
