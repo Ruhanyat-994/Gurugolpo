@@ -27,17 +27,18 @@ public class Blog {
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private Set<Comment> comments = new HashSet<>();
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private Set<Voting> votes = new HashSet<>();
+    private List<Voting> votes = new ArrayList<>();
 
-    public long getUpVote(){
-        return votes.stream().filter(v-> v.getVoteType() == VoteType.UPVOTE).count();
-    }
-    public long getDownVote(){
-        return votes.stream().filter(v-> v.getVoteType() == VoteType.DOWNVOTE).count();
-    }
+
+    private long upVote = 0;
+    private long downVote = 0;
+    @Column
+    private Integer voteCount=0;
+
+
 
 }

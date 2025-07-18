@@ -13,4 +13,7 @@ public interface BlogRepository extends JpaRepository<Blog, UUID> {
 @EntityGraph(attributePaths = {"comments","votes"})
 List<Blog> findAll();
 
+List<Blog> findAllByOrderByVoteCountDesc();
+
+
 }
