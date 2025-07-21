@@ -4,6 +4,7 @@ import com.loginFeature.login.Dto.BlogDto;
 import com.loginFeature.login.entity.Blog;
 import com.loginFeature.login.repository.BlogRepository;
 import com.loginFeature.login.service.BlogService;
+import com.loginFeature.login.service.VotingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,8 @@ public class BlogController {
     @Autowired
     private BlogRepository blogRepository;
 
+    @Autowired
+    private VotingService votingService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createBlog(@RequestBody Blog blog, Authentication authentication){
@@ -76,6 +79,10 @@ public class BlogController {
 //
 //        return ResponseEntity.ok(response);
 //    }
+@GetMapping("/popular")
+public ResponseEntity<List<Blog>> getPopularBlogs() {
+    return ResponseEntity.ok(votingService.getAllBlogsSortedByPopularity());
+}
 
 
 }

@@ -21,7 +21,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blog_id")
     @JsonBackReference
     private Blog blog;

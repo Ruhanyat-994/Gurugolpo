@@ -1,5 +1,6 @@
 package com.loginFeature.login.controller;
 
+import com.loginFeature.login.entity.Blog;
 import com.loginFeature.login.entity.User;
 import com.loginFeature.login.enums.VoteType;
 import com.loginFeature.login.repository.UserRepsitory;
@@ -9,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -33,4 +37,9 @@ public class VotingController {
         String message = votingService.vote(blogId, user, VoteType.DOWNVOTE);
         return ResponseEntity.ok(message);
     }
+    @GetMapping("/count/{blogId}")
+    public ResponseEntity<Map<String, Long>> getVoteCounts(@PathVariable UUID blogId){
+        return ResponseEntity.ok(votingService.getVoteCount(blogId));
+    }
+
 }

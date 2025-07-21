@@ -1,5 +1,6 @@
 package com.loginFeature.login.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.loginFeature.login.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,9 @@ public class Voting {
 
     @ManyToOne
     private User user;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blog_id")
+    @JsonBackReference
     private Blog blog;
 
 }

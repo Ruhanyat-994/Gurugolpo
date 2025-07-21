@@ -27,11 +27,11 @@ public class Blog {
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<Comment> comments = new ArrayList<>();
+    private Set<Comment> comments = new HashSet<>();
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<Voting> votes = new ArrayList<>();
+    private Set<Voting> votes = new HashSet<>();
 
 
     private long upVote = 0;
