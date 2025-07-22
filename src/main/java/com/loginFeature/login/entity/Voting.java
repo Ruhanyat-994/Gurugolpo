@@ -16,13 +16,14 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Voting {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private UUID id;
 
     @Enumerated(EnumType.STRING)
     private VoteType voteType;
 
     @ManyToOne
+    @JoinColumn(name = "user_username")
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blog_id")

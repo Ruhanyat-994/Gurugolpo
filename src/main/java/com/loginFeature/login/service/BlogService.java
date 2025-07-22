@@ -23,16 +23,6 @@ public class BlogService {
         return blog;
     }
 
-    public List<BlogDto> getAllBlogs(){
-        return blogRepository.findAll().stream()
-                .map(blog -> new BlogDto(
-                        blog.getId(),
-                        blog.getTitle(),
-                        blog.getContent(),
-                        blog.getAuthor()
-                ))
-                .toList();
-    }
 
 
     public Blog getBlogById(UUID id){
@@ -49,5 +39,11 @@ public class BlogService {
         blogRepository.deleteById(id);
     }
 
+    public List<Blog> getAllBlogsSortedByNewest(){
+        return blogRepository.findAllByOrderByCreatedAtDesc();
+    }
+    public List<Blog> searchBlog(String keyword){
+        return blogRepository.searchByKeyWord(keyword);
+    }
 
 }

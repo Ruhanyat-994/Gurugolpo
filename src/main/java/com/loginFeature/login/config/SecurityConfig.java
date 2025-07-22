@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -22,16 +24,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf -> csrf.disable()).
-                authorizeHttpRequests(auth -> auth.
-                        requestMatchers("/api/public/register", "/api/auth/login").permitAll().
-                        requestMatchers("/api/blogs").permitAll().requestMatchers("/api/blogs/**").authenticated().
-                        requestMatchers("/api/blogs/**","/api/comments/**").authenticated()
-                        .anyRequest().authenticated())
-                        .sessionManagement(config -> config
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        )
-                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/public/register", "/api/auth/login" , "/api/blogs/**").permitAll()
+                        .requestMatchers("/api/comments/**").authenticated()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(config -> config
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

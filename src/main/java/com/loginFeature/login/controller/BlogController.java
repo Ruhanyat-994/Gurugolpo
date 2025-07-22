@@ -32,17 +32,14 @@ public class BlogController {
 
     }
 
+    // this will get all blogs by the newest blog
     @GetMapping
-    public ResponseEntity<?> getAllBlogs(){
-        try {
-            List<BlogDto> blogs = blogService.getAllBlogs();
-            return ResponseEntity.ok(blogs);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<List<Blog>> getAllBlogs(){
+        return ResponseEntity.ok(blogService.getAllBlogsSortedByNewest());
     }
 
+
+    // it will update the blog by id
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBlog(@PathVariable UUID id, @RequestBody Blog updatedBlog, Authentication authentication){
         Blog blogById = blogService.getBlogById(id);
@@ -60,6 +57,7 @@ public class BlogController {
         return ResponseEntity.ok(blog);
     }
 
+    // it will delete the blog by Id
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBlog(@PathVariable UUID id, Authentication authentication) {
 
@@ -82,6 +80,11 @@ public class BlogController {
 @GetMapping("/popular")
 public ResponseEntity<List<Blog>> getPopularBlogs() {
     return ResponseEntity.ok(votingService.getAllBlogsSortedByPopularity());
+}
+// get the blog by search
+@GetMapping("/search")
+public ResponseEntity<List<Blog>> searchBlog(@RequestParam("q") String query){
+        return ResponseEntity.ok(blogService.searchBlog(query));
 }
 
 

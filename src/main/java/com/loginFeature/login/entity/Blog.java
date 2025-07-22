@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -25,20 +26,27 @@ public class Blog {
     private String content;
     private String author;
 
-    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<Comment> comments = new HashSet<>();
+//    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    private Set<Comment> comments = new HashSet<>();
+//
+//    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    private Set<Voting> votes = new HashSet<>();
 
-    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<Voting> votes = new HashSet<>();
-
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     private long upVote = 0;
     private long downVote = 0;
     @Column
     private Integer voteCount=0;
 
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
 
 }

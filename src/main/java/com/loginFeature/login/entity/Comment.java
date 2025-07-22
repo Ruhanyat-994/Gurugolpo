@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,14 +26,14 @@ public class Comment {
     @JsonBackReference
     private Blog blog;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Lob
     private String content;
-    @CreationTimestamp
-    @Column(updatable = false)
+
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
 }
