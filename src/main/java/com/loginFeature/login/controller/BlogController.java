@@ -84,6 +84,7 @@ public ResponseEntity<List<Blog>> getPopularBlogs() {
 // get the blog by search
 @GetMapping("/search")
 public ResponseEntity<List<Blog>> searchBlog(@RequestParam("q") String query){
+        query = query.trim();
         return ResponseEntity.ok(blogService.searchBlog(query));
 }
 

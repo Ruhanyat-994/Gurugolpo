@@ -18,11 +18,12 @@ public interface BlogRepository extends JpaRepository<Blog, UUID> {
 List<Blog> findAll();
 
     @Query("""
-        SELECT b FROM Blog b 
-        WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) 
-           OR b.content LIKE CONCAT('%', :keyword, '%')
-    """)
-List<Blog> searchByKeyWord(@Param("keyword") String keyword);
+    SELECT b FROM Blog b 
+    WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) 
+       OR b.content LIKE CONCAT('%', :keyword, '%')
+""")
+    List<Blog> searchByKeyWord(@Param("keyword") String keyword);
+
 
 List<Blog> findAllByOrderByCreatedAtDesc();
 
