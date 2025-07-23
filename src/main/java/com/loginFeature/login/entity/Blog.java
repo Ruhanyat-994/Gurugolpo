@@ -1,6 +1,7 @@
 package com.loginFeature.login.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.loginFeature.login.enums.VoteType;
 import jakarta.persistence.*;
@@ -25,6 +26,11 @@ public class Blog {
     @Lob
     private String content;
     private String author;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"password", "email", "roles"})
+    private User user;
 
 //    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 //    @JsonManagedReference

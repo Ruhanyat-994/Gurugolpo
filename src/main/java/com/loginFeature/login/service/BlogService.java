@@ -1,12 +1,11 @@
 package com.loginFeature.login.service;
-import com.loginFeature.login.Dto.BlogDto;
 import com.loginFeature.login.entity.Blog;
+import com.loginFeature.login.entity.User;
 import com.loginFeature.login.repository.BlogRepository;
+import com.loginFeature.login.repository.UserRepsitory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,12 +16,15 @@ public class BlogService {
     @Autowired
 
     private BlogRepository blogRepository;
+    @Autowired
+    private UserRepsitory userRepsitory;
 
-    public Blog createBlog(Blog blog){
+    public Blog createBlog(Blog blog, String username){
+        User user = userRepsitory.findByUsername(username);
+        blog.setUser(user);
         blogRepository.save(blog);
         return blog;
     }
-
 
 
     public Blog getBlogById(UUID id){
@@ -40,6 +42,7 @@ public class BlogService {
     }
 
     public List<Blog> getAllBlogsSortedByNewest(){
+
         return blogRepository.findAllByOrderByCreatedAtDesc();
     }
     public List<Blog> searchBlog(String keyword){

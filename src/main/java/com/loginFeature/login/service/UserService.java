@@ -14,9 +14,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void registerUser(String username, String passowrd, String role){
+    public void registerUser(String username, String passowrd, String role, String university){
         String hashed = passwordEncoder.encode(passowrd);
-        userRepsitory.save(new User(username,hashed,role));
+        userRepsitory.save(new User(username,hashed,role,university));
 
     }
     public User getUser(String username){

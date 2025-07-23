@@ -13,11 +13,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/public/register")
-    public String register(@RequestBody User user ){
+    public String register(@RequestBody User user){
         String username = user.getUsername();
         String password = user.getPassword();
+        String university = user.getUniversity();
         String role = user.getRole();
-        userService.registerUser(username,password,role);
+        userService.registerUser(username,password,role,university);
         return "User Registry Successfull!";
     }
 

@@ -2,6 +2,7 @@ package com.loginFeature.login.controller;
 
 import com.loginFeature.login.Dto.BlogDto;
 import com.loginFeature.login.entity.Blog;
+import com.loginFeature.login.entity.User;
 import com.loginFeature.login.repository.BlogRepository;
 import com.loginFeature.login.service.BlogService;
 import com.loginFeature.login.service.VotingService;
@@ -24,9 +25,9 @@ public class BlogController {
     private VotingService votingService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createBlog(@RequestBody Blog blog, Authentication authentication){
+    public ResponseEntity<?> createBlog(@RequestBody Blog blog,Authentication authentication){
         blog.setAuthor(authentication.getName());
-        Blog createdBlog = blogService.createBlog(blog);
+        Blog createdBlog = blogService.createBlog(blog,authentication.getName());
         return ResponseEntity.ok(createdBlog);
 
 
@@ -87,6 +88,7 @@ public ResponseEntity<List<Blog>> searchBlog(@RequestParam("q") String query){
         query = query.trim();
         return ResponseEntity.ok(blogService.searchBlog(query));
 }
+
 
 
 }

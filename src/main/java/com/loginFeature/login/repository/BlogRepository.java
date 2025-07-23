@@ -30,4 +30,6 @@ List<Blog> findAllByOrderByCreatedAtDesc();
 List<Blog> findAllByOrderByVoteCountDesc();
 
 
+
+
 }
