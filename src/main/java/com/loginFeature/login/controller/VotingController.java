@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
 @RequestMapping("/api/blogs/vote")
 public class VotingController {
 

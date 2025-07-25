@@ -14,11 +14,19 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void registerUser(String username, String passowrd, String role, String university){
-        String hashed = passwordEncoder.encode(passowrd);
-        userRepsitory.save(new User(username,hashed,role,university));
-
+    public boolean registerUser(String username, String password, String role, String university) {
+        if (userRepsitory.findByUsername(username) != null) {
+            return false; // User already exists
+        }
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setRole(role);
+        newUser.setUniversity(university);
+        userRepsitory.save(newUser);
+        return true;
     }
+
     public User getUser(String username){
         return userRepsitory.findByUsername(username);
     }
