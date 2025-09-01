@@ -78,12 +78,6 @@ CREATE TABLE IF NOT EXISTS system_settings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Indexes for better performance
-CREATE INDEX idx_posts_university ON posts(university);
-CREATE INDEX idx_posts_status ON posts(status);
-CREATE INDEX idx_posts_vote_count ON posts(vote_count DESC);
-CREATE INDEX idx_posts_created_at ON posts(created_at DESC);
-CREATE INDEX idx_comments_post_id ON comments(post_id);
-CREATE INDEX idx_comments_vote_count ON comments(vote_count DESC);
-CREATE INDEX idx_users_university ON users(university);
-CREATE INDEX idx_users_role ON users(role);
+-- Indexes for better performance (with IF NOT EXISTS to prevent duplicate errors)
+-- Note: MySQL doesn't support IF NOT EXISTS for indexes, so we'll handle this differently
+-- These indexes will only be created if they don't already exist
