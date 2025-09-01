@@ -9,14 +9,10 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+public class SystemSettings {
     private Long id;
-    private Long postId;
-    private Long authorId;
-    private String content;
-    private Integer upvotes;
-    private Integer downvotes;
-    private Integer voteCount;
-    private LocalDateTime createdAt;
+    private String settingKey;
+    private String settingValue;
+    private String description;
     private LocalDateTime updatedAt;
 }

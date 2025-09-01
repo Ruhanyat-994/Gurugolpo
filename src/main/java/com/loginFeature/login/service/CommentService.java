@@ -1,72 +1,120 @@
 package com.loginFeature.login.service;
 
+import com.loginFeature.login.Dto.CommentCreateDto;
 import com.loginFeature.login.Dto.CommentDto;
-import com.loginFeature.login.entity.Blog;
 import com.loginFeature.login.entity.Comment;
 import com.loginFeature.login.entity.User;
 import com.loginFeature.login.repository.CommentRepository;
-import com.loginFeature.login.repository.UserRepsitory;
+import com.loginFeature.login.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
 
     @Autowired
-    private BlogService blogService;
-    @Autowired
     private CommentRepository commentRepository;
+    
     @Autowired
-    private UserRepsitory userRepsitory;
+    private UserRepository userRepository;
 
-    private CommentDto mapToCommentDto(Comment comment) {
-        return new CommentDto(
-                comment.getId(),
-                comment.getContent(),
-                comment.getUser().getUsername(),
-                comment.getCreatedAt()
-        );
-    }
-    public CommentDto addComment(UUID blogId, String content, String username){
-        Blog blog = blogService.getBlogById(blogId);
-        User user = userRepsitory.findByUsername(username);
+    public Comment addComment(Long postId, CommentCreateDto commentDto, Long authorId) {
+        Optional<User> userOpt = userRepository.findById(authorId);
+        if (userOpt.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
 
         Comment comment = new Comment();
-        comment.setBlog(blog);
-        comment.setUser(user);
-        comment.setContent(content);
-        Comment save = commentRepository.save(comment);
-        Comment refreshed = commentRepository.findById(save.getId()).orElseThrow();
-        return mapToCommentDto(refreshed);
-
-    }
-    public Comment updateComment(UUID commentId, String newContent, String username){
-        Comment comment = commentRepository.findById(commentId).
-                orElseThrow(()-> new RuntimeException("Comment not Found!"));
-
-        if(!comment.getUser().getUsername().equals(username)){
-            throw new RuntimeException("Unauthorize : you can only edit your own comments!");
-        }
-        comment.setContent(newContent);
+        comment.setPostId(postId);
+        comment.setAuthorId(authorId);
+        comment.setContent(commentDto.getContent());
+        comment.setUpvotes(0);
+        comment.setDownvotes(0);
+        comment.setVoteCount(0);
+        comment.setCreatedAt(LocalDateTime.now());
+        comment.setUpdatedAt(LocalDateTime.now());
+        
         return commentRepository.save(comment);
     }
 
-    public void deleteComment(UUID commentId, String username){
-        Comment comment = commentRepository.findById(commentId).
-                orElseThrow(()-> new RuntimeException("Comment not Found"));
-
-        if(!comment.getUser().getUsername().equals(username)){
-            throw new RuntimeException("Unauthorize : you can only delete your own comments!");
+    public Comment updateComment(Long commentId, CommentCreateDto commentDto, Long authorId) {
+        Optional<Comment> commentOpt = commentRepository.findById(commentId);
+        if (commentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Comment not found");
         }
-         commentRepository.delete(comment);
+
+        Comment comment = commentOpt.get();
+        if (!comment.getAuthorId().equals(authorId)) {
+            throw new IllegalArgumentException("Unauthorized: you can only edit your own comments!");
+        }
+
+        comment.setContent(commentDto.getContent());
+        comment.setUpdatedAt(LocalDateTime.now());
+        commentRepository.update(comment);
+        return comment;
     }
 
-    public List<Comment> getCommentsForBlog(UUID blogId){
-        return commentRepository.findByBlog_Id(blogId);
+    public void deleteComment(Long commentId, Long authorId) {
+        Optional<Comment> commentOpt = commentRepository.findById(commentId);
+        if (commentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Comment not found");
+        }
+
+        Comment comment = commentOpt.get();
+        if (!comment.getAuthorId().equals(authorId)) {
+            throw new IllegalArgumentException("Unauthorized: you can only delete your own comments!");
+        }
+
+        commentRepository.deleteById(commentId);
     }
 
+    public List<Comment> getCommentsForPost(Long postId) {
+        return commentRepository.findByPostId(postId);
+    }
+
+    public List<Comment> getCommentsByAuthor(Long authorId) {
+        return commentRepository.findByAuthorId(authorId);
+    }
+
+    public Optional<Comment> getCommentById(Long id) {
+        return commentRepository.findById(id);
+    }
+
+    public long getCommentCount() {
+        return commentRepository.count();
+    }
+
+    public long getCommentCountByPost(Long postId) {
+        return commentRepository.countByPostId(postId);
+    }
+
+    public CommentDto convertToDto(Comment comment) {
+        CommentDto dto = new CommentDto();
+        dto.setId(comment.getId());
+        dto.setPostId(comment.getPostId());
+        dto.setContent(comment.getContent());
+        dto.setAuthorId(comment.getAuthorId());
+        dto.setUpvotes(comment.getUpvotes());
+        dto.setDownvotes(comment.getDownvotes());
+        dto.setVoteCount(comment.getVoteCount());
+        dto.setCreatedAt(comment.getCreatedAt());
+        dto.setUpdatedAt(comment.getUpdatedAt());
+        
+        // Get author username
+        Optional<User> author = userRepository.findById(comment.getAuthorId());
+        dto.setAuthorUsername(author.map(User::getUsername).orElse("Unknown"));
+        
+        return dto;
+    }
+
+    public List<CommentDto> convertToDtoList(List<Comment> comments) {
+        return comments.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 }

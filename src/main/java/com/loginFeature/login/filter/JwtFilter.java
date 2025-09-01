@@ -29,8 +29,14 @@ public class JwtFilter extends OncePerRequestFilter {
     // List of public endpoints to skip JWT validation
     private static final List<String> PUBLIC_URLS = List.of(
             "/api/public/register",
-            "/api/auth/login"
-
+            "/api/auth/login",
+            "/api/posts",
+            "/api/posts/search",
+            "/api/posts/university",
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/swagger-ui",
+            "/docs"
     );
 
     @Override
@@ -41,44 +47,50 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // Skip JWT validation for exact public endpoints
-        if (isPublicEndpoint(path)) {
+        // Skip JWT validation for public endpoints
+        if (isPublicEndpoint(path, method)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Skip JWT validation for GET requests to /api/blogs/**
-        if (path.startsWith("/api/blogs") && "GET".equalsIgnoreCase(method)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // JWT validation for other requests
+        // JWT validation for protected requests
         String authHeader = request.getHeader("Authorization");
-        String username = null;
+        String email = null;
         String jwt = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+            email = jwtUtil.extractUsername(jwt);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            try {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            if (jwtUtil.validateToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (Exception e) {
+                // Log the error but don't block the request
+                logger.error("JWT validation failed: " + e.getMessage());
             }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private boolean isPublicEndpoint(String path) {
+    private boolean isPublicEndpoint(String path, String method) {
+        // Allow GET requests to posts without authentication
+        if ("GET".equalsIgnoreCase(method) && 
+            (path.startsWith("/api/posts") || path.startsWith("/api/posts/"))) {
+            return true;
+        }
+        
+        // Check exact public URLs
         return PUBLIC_URLS.stream()
                 .anyMatch(publicUrl -> path.equals(publicUrl) || path.startsWith(publicUrl + "/"));
     }

@@ -1,5 +1,6 @@
 package com.loginFeature.login.entity;
 
+import com.loginFeature.login.enums.VoteType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,16 +8,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+@AllArgsConstructor
+public class PostVote {
     private Long id;
     private Long postId;
-    private Long authorId;
-    private String content;
-    private Integer upvotes;
-    private Integer downvotes;
-    private Integer voteCount;
+    private Long userId;
+    private VoteType voteType;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

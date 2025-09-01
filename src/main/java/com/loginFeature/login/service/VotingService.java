@@ -1,85 +1,161 @@
 package com.loginFeature.login.service;
 
-import com.loginFeature.login.entity.Blog;
-import com.loginFeature.login.entity.User;
-import com.loginFeature.login.entity.Voting;
+import com.loginFeature.login.entity.Comment;
+import com.loginFeature.login.entity.Post;
+import com.loginFeature.login.entity.PostVote;
+import com.loginFeature.login.entity.CommentVote;
 import com.loginFeature.login.enums.VoteType;
-import com.loginFeature.login.repository.BlogRepository;
-import com.loginFeature.login.repository.VotingRepository;
-import com.mysql.cj.log.Log;
+import com.loginFeature.login.repository.PostRepository;
+import com.loginFeature.login.repository.CommentRepository;
+import com.loginFeature.login.repository.PostVoteRepository;
+import com.loginFeature.login.repository.CommentVoteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.rmi.server.UID;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
 public class VotingService {
 
     @Autowired
-    private VotingRepository votingRepository;
+    private PostVoteRepository postVoteRepository;
 
     @Autowired
-    private BlogRepository blogRepository;
+    private CommentVoteRepository commentVoteRepository;
 
-    public String vote(UUID blogId, User user, VoteType voteType){
-        Blog blog = blogRepository.findById(blogId).orElseThrow(()-> new RuntimeException("Blog Not Found"));
+    @Autowired
+    private PostRepository postRepository;
 
-        Optional<Voting> existingBlog = votingRepository.findByUserAndBlog(user, blog);
+    @Autowired
+    private CommentRepository commentRepository;
 
-        if(existingBlog.isPresent()){
-            Voting voting = existingBlog.get();
+    public String voteOnPost(Long postId, Long userId, VoteType voteType) {
+        Optional<Post> postOpt = postRepository.findById(postId);
+        if (postOpt.isEmpty()) {
+            throw new IllegalArgumentException("Post not found");
+        }
 
-            if(voting.getVoteType() == voteType){
-                votingRepository.delete(voting);
-                updateVoteCounts(blog);
-                return "Vote Withdrawn";
+        Post post = postOpt.get();
+        Optional<PostVote> existingVote = postVoteRepository.findByPostIdAndUserId(postId, userId);
+
+        if (existingVote.isPresent()) {
+            PostVote vote = existingVote.get();
+            if (vote.getVoteType() == voteType) {
+                // Same vote type - remove the vote
+                postVoteRepository.deleteByPostIdAndUserId(postId, userId);
+                updatePostVoteCounts(post);
+                return "Vote withdrawn";
+            } else {
+                // Different vote type - change the vote
+                vote.setVoteType(voteType);
+                postVoteRepository.save(vote);
+                updatePostVoteCounts(post);
+                return "Vote changed to " + voteType;
             }
-            voting.setVoteType(voteType);
-            votingRepository.save(voting);
-            updateVoteCounts(blog);
-            return "Vote changed to " + voteType;
-        }else{
-            Voting voting = new Voting();
-            voting.setBlog(blog);
-            voting.setUser(user);
-            voting.setVoteType(voteType);
-            votingRepository.save(voting);
-            updateVoteCounts(blog);
+        } else {
+            // New vote
+            PostVote vote = new PostVote();
+            vote.setPostId(postId);
+            vote.setUserId(userId);
+            vote.setVoteType(voteType);
+            postVoteRepository.save(vote);
+            updatePostVoteCounts(post);
             return "Voted " + voteType;
         }
     }
-    public Map<String, Long> getVoteCount(UUID blogId){
-        Blog blog = blogRepository.findById(blogId).orElseThrow(()-> new RuntimeException("Blog Not Found"));
 
-        long upvotes = votingRepository.countByBlogAndVoteType(blog,VoteType.UPVOTE);
-        long downvotes = votingRepository.countByBlogAndVoteType(blog,VoteType.DOWNVOTE);
+    public String voteOnComment(Long commentId, Long userId, VoteType voteType) {
+        Optional<Comment> commentOpt = commentRepository.findById(commentId);
+        if (commentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Comment not found");
+        }
+
+        Comment comment = commentOpt.get();
+        Optional<CommentVote> existingVote = commentVoteRepository.findByCommentIdAndUserId(commentId, userId);
+
+        if (existingVote.isPresent()) {
+            CommentVote vote = existingVote.get();
+            if (vote.getVoteType() == voteType) {
+                // Same vote type - remove the vote
+                commentVoteRepository.deleteByCommentIdAndUserId(commentId, userId);
+                updateCommentVoteCounts(comment);
+                return "Vote withdrawn";
+            } else {
+                // Different vote type - change the vote
+                vote.setVoteType(voteType);
+                commentVoteRepository.save(vote);
+                updateCommentVoteCounts(comment);
+                return "Vote changed to " + voteType;
+            }
+        } else {
+            // New vote
+            CommentVote vote = new CommentVote();
+            vote.setCommentId(commentId);
+            vote.setUserId(userId);
+            vote.setVoteType(voteType);
+            commentVoteRepository.save(vote);
+            updateCommentVoteCounts(comment);
+            return "Voted " + voteType;
+        }
+    }
+
+    public Map<String, Long> getPostVoteCount(Long postId) {
+        Optional<Post> postOpt = postRepository.findById(postId);
+        if (postOpt.isEmpty()) {
+            throw new IllegalArgumentException("Post not found");
+        }
+
+        Post post = postOpt.get();
+        long upvotes = postVoteRepository.countByPostIdAndVoteType(postId, VoteType.UPVOTE);
+        long downvotes = postVoteRepository.countByPostIdAndVoteType(postId, VoteType.DOWNVOTE);
 
         Map<String, Long> voteCount = new HashMap<>();
-        voteCount.put("upvotes",upvotes);
-        voteCount.put("downvotes",downvotes);
-        voteCount.put("totalVotes",upvotes+downvotes);
+        voteCount.put("upvotes", upvotes);
+        voteCount.put("downvotes", downvotes);
+        voteCount.put("totalVotes", upvotes + downvotes);
+        voteCount.put("voteCount", (long) post.getVoteCount());
         return voteCount;
-
     }
 
-    public List<Blog> getAllBlogsSortedByPopularity(){
-        List<Blog> allBlogs = blogRepository.findAll();
+    public Map<String, Long> getCommentVoteCount(Long commentId) {
+        Optional<Comment> commentOpt = commentRepository.findById(commentId);
+        if (commentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Comment not found");
+        }
 
-        allBlogs.sort((b1,b2) -> Integer.compare(b2.getVoteCount(), b1.getVoteCount()));
+        Comment comment = commentOpt.get();
+        long upvotes = commentVoteRepository.countByCommentIdAndVoteType(commentId, VoteType.UPVOTE);
+        long downvotes = commentVoteRepository.countByCommentIdAndVoteType(commentId, VoteType.DOWNVOTE);
 
-        return allBlogs;
+        Map<String, Long> voteCount = new HashMap<>();
+        voteCount.put("upvotes", upvotes);
+        voteCount.put("downvotes", downvotes);
+        voteCount.put("totalVotes", upvotes + downvotes);
+        voteCount.put("voteCount", (long) comment.getVoteCount());
+        return voteCount;
     }
 
-    public void updateVoteCounts(Blog blog){
-        long up = votingRepository.countByBlogAndVoteType(blog, VoteType.UPVOTE);
-        long down = votingRepository.countByBlogAndVoteType(blog, VoteType.DOWNVOTE);
+    private void updatePostVoteCounts(Post post) {
+        long upvotes = postVoteRepository.countByPostIdAndVoteType(post.getId(), VoteType.UPVOTE);
+        long downvotes = postVoteRepository.countByPostIdAndVoteType(post.getId(), VoteType.DOWNVOTE);
 
-        blog.setUpVote(up);
-        blog.setDownVote(down);
-        blog.setVoteCount((int)(up+down));
-        blogRepository.save(blog);
+        post.setUpvotes((int) upvotes);
+        post.setDownvotes((int) downvotes);
+        post.setVoteCount((int) (upvotes - downvotes)); // Net vote count
+        postRepository.update(post);
+    }
+
+    private void updateCommentVoteCounts(Comment comment) {
+        long upvotes = commentVoteRepository.countByCommentIdAndVoteType(comment.getId(), VoteType.UPVOTE);
+        long downvotes = commentVoteRepository.countByCommentIdAndVoteType(comment.getId(), VoteType.DOWNVOTE);
+
+        comment.setUpvotes((int) upvotes);
+        comment.setDownvotes((int) downvotes);
+        comment.setVoteCount((int) (upvotes - downvotes)); // Net vote count
+        commentRepository.update(comment);
     }
 }

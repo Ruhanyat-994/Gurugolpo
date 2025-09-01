@@ -1,27 +1,26 @@
 package com.loginFeature.login.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+import java.time.LocalDateTime;
+
 @Data
-@Table(name = "users")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
-    @Id
+    private Long id;
+    private String email;
     private String username;
-
-
     private String password;
-    private String role;
     private String university;
+    private UserRole role;
+    private Boolean isActive;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-
-
+    public enum UserRole {
+        STUDENT, MODERATOR, ADMIN
+    }
 }

@@ -1,33 +1,89 @@
 package com.loginFeature.login.service;
 
+import com.loginFeature.login.Dto.UserRegistrationDto;
 import com.loginFeature.login.entity.User;
-import com.loginFeature.login.repository.UserRepsitory;
+import com.loginFeature.login.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserService {
     @Autowired
-    private UserRepsitory userRepsitory;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public boolean registerUser(String username, String password, String role, String university) {
-        if (userRepsitory.findByUsername(username) != null) {
-            return false; // User already exists
+    public User registerUser(UserRegistrationDto registrationDto) {
+        if (userRepository.existsByEmail(registrationDto.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
         }
+        if (userRepository.existsByUsername(registrationDto.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        
         User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(passwordEncoder.encode(password));
-        newUser.setRole(role);
-        newUser.setUniversity(university);
-        userRepsitory.save(newUser);
-        return true;
+        newUser.setEmail(registrationDto.getEmail());
+        newUser.setUsername(registrationDto.getUsername());
+        newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+        newUser.setUniversity(registrationDto.getUniversity());
+        newUser.setRole(User.UserRole.STUDENT);
+        newUser.setIsActive(true);
+        newUser.setCreatedAt(LocalDateTime.now());
+        newUser.setUpdatedAt(LocalDateTime.now());
+        
+        return userRepository.save(newUser);
     }
 
-    public User getUser(String username){
-        return userRepsitory.findByUsername(username);
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public List<User> getUsersByUniversity(String university) {
+        return userRepository.findByUniversity(university);
+    }
+
+    public List<User> getUsersByRole(User.UserRole role) {
+        return userRepository.findByRole(role);
+    }
+
+    public User updateUser(User user) {
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.update(user);
+        return user;
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public long getUserCount() {
+        return userRepository.count();
+    }
+
+    public User promoteToModerator(Long userId, String university) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setRole(User.UserRole.MODERATOR);
+            user.setUniversity(university);
+            user.setUpdatedAt(LocalDateTime.now());
+            userRepository.update(user);
+            return user;
+        }
+        throw new IllegalArgumentException("User not found");
     }
 }
