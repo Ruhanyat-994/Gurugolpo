@@ -9,18 +9,12 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class University {
+    
     private Long id;
-    private String email;
-    private String username;
-    private String password;
-    private String university;
-    private UserRole role;
-    private Boolean isActive;
+    private String name;
+    private String description;
+    private Boolean isActive = true;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public enum UserRole {
-        USER, MODERATOR, ADMIN
-    }
 }

@@ -30,9 +30,11 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final List<String> PUBLIC_URLS = List.of(
             "/api/public/register",
             "/api/auth/login",
-            "/api/posts",
-            "/api/posts/search",
-            "/api/posts/university",
+            "/api/auth/debug",
+            "/api/auth/test-token",
+            "/api/auth/debug-step-by-step",
+            "/api/auth/test-auth",
+            "/api/universities",
             "/v2/api-docs",
             "/v3/api-docs",
             "/swagger-ui",
@@ -46,44 +48,111 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
         String method = request.getMethod();
+        
+        System.out.println("=== JWT Filter Processing ===");
+        System.out.println("Path: " + path);
+        System.out.println("Method: " + method);
+        System.out.println("Is Public Endpoint: " + isPublicEndpoint(path, method));
 
         // Skip JWT validation for public endpoints
         if (isPublicEndpoint(path, method)) {
+            System.out.println("Skipping JWT validation for public endpoint");
             filterChain.doFilter(request, response);
             return;
         }
 
+        System.out.println("Processing protected endpoint - JWT validation required");
+
         // JWT validation for protected requests
         String authHeader = request.getHeader("Authorization");
+        System.out.println("Authorization Header: " + (authHeader != null ? authHeader.substring(0, Math.min(50, authHeader.length())) + "..." : "NULL"));
+        
         String email = null;
         String jwt = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-            email = jwtUtil.extractUsername(jwt);
+            System.out.println("Extracted JWT Token: " + jwt.substring(0, Math.min(50, jwt.length())) + "...");
+            
+            try {
+                email = jwtUtil.extractUsername(jwt);
+                System.out.println("Extracted Email: " + email);
+            } catch (Exception e) {
+                System.err.println("ERROR: Failed to extract username from JWT: " + e.getMessage());
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Invalid JWT token - extraction failed");
+                return;
+            }
+        } else {
+            System.err.println("ERROR: Missing or invalid Authorization header for path: " + path);
+            System.err.println("Header value: " + authHeader);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Missing or invalid Authorization header");
+            return;
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            System.out.println("Loading user details for email: " + email);
             try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                System.out.println("User details loaded successfully");
+                System.out.println("Username: " + userDetails.getUsername());
+                System.out.println("Authorities: " + userDetails.getAuthorities());
+                System.out.println("Account non-expired: " + userDetails.isAccountNonExpired());
+                System.out.println("Account non-locked: " + userDetails.isAccountNonLocked());
+                System.out.println("Credentials non-expired: " + userDetails.isCredentialsNonExpired());
+                System.out.println("Enabled: " + userDetails.isEnabled());
 
+                System.out.println("Validating JWT token...");
                 if (jwtUtil.validateToken(jwt, userDetails)) {
+                    System.out.println("JWT validation SUCCESSFUL");
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities()
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("Authentication context set successfully");
+                    System.out.println("Security Context Authentication: " + SecurityContextHolder.getContext().getAuthentication());
+                } else {
+                    System.err.println("ERROR: JWT validation FAILED for user: " + email);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Invalid JWT token - validation failed");
+                    return;
                 }
             } catch (Exception e) {
-                // Log the error but don't block the request
-                logger.error("JWT validation failed: " + e.getMessage());
+                System.err.println("ERROR: JWT validation failed for user: " + email + " - " + e.getMessage());
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Authentication failed: " + e.getMessage());
+                return;
             }
+        } else {
+            System.out.println("Authentication context already exists or email is null");
+            System.out.println("Email: " + email);
+            System.out.println("Existing Authentication: " + SecurityContextHolder.getContext().getAuthentication());
         }
 
+        System.out.println("Proceeding to endpoint with authentication: " + SecurityContextHolder.getContext().getAuthentication());
+        
+        // CRITICAL: Check if authentication is properly set
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            System.out.println("✅ Authentication context is SET - proceeding to endpoint");
+            System.out.println("Principal: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            System.out.println("Authorities: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+            System.out.println("Is Authenticated: " + SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
+        } else {
+            System.err.println("❌ CRITICAL ERROR: Authentication context is NULL - this will cause 403!");
+        }
+        
         filterChain.doFilter(request, response);
     }
 
     private boolean isPublicEndpoint(String path, String method) {
+        System.out.println("=== Checking if endpoint is public ===");
+        System.out.println("Path: " + path);
+        System.out.println("Method: " + method);
+        
         // Allow only specific read-only GET requests to posts without authentication
         if ("GET".equalsIgnoreCase(method)) {
             // Allow viewing posts, searching posts, and university-specific posts
@@ -91,12 +160,28 @@ public class JwtFilter extends OncePerRequestFilter {
                 path.startsWith("/api/posts/search") || 
                 path.startsWith("/api/posts/university/") ||
                 path.matches("/api/posts/\\d+")) { // Allow viewing specific post by ID
+                System.out.println("✅ Public GET endpoint detected");
                 return true;
             }
         }
         
-        // Check exact public URLs
-        return PUBLIC_URLS.stream()
-                .anyMatch(publicUrl -> path.equals(publicUrl) || path.startsWith(publicUrl + "/"));
+        // Check exact public URLs and Swagger UI paths
+        boolean isPublic = PUBLIC_URLS.stream()
+                .anyMatch(publicUrl -> {
+                    boolean exactMatch = path.equals(publicUrl);
+                    boolean swaggerMatch = publicUrl.equals("/swagger-ui") && path.startsWith("/swagger-ui");
+                    boolean docsMatch = publicUrl.equals("/docs") && path.startsWith("/docs");
+                    boolean apiDocsMatch = (publicUrl.equals("/v2/api-docs") || publicUrl.equals("/v3/api-docs")) && 
+                                         (path.startsWith("/v2/api-docs") || path.startsWith("/v3/api-docs"));
+                    
+                    boolean isMatch = exactMatch || swaggerMatch || docsMatch || apiDocsMatch;
+                    System.out.println("Checking: " + publicUrl + " -> exact: " + exactMatch + 
+                                     ", swagger: " + swaggerMatch + ", docs: " + docsMatch + 
+                                     ", apiDocs: " + apiDocsMatch);
+                    return isMatch;
+                });
+        
+        System.out.println("Final result - Is public endpoint: " + isPublic);
+        return isPublic;
     }
 }

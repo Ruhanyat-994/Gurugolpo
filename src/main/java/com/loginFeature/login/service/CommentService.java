@@ -72,6 +72,16 @@ public class CommentService {
 
         commentRepository.deleteById(commentId);
     }
+    
+    // Method for moderators to delete any comment
+    public void deleteCommentAsModerator(Long commentId) {
+        Optional<Comment> commentOpt = commentRepository.findById(commentId);
+        if (commentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Comment not found");
+        }
+        
+        commentRepository.deleteById(commentId);
+    }
 
     public List<Comment> getCommentsForPost(Long postId) {
         return commentRepository.findByPostId(postId);

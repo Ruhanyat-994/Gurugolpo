@@ -52,7 +52,7 @@ public class VotingService {
             } else {
                 // Different vote type - change the vote
                 vote.setVoteType(voteType);
-                postVoteRepository.save(vote);
+                postVoteRepository.update(vote);
                 updatePostVoteCounts(post);
                 return "Vote changed to " + voteType;
             }
@@ -87,7 +87,7 @@ public class VotingService {
             } else {
                 // Different vote type - change the vote
                 vote.setVoteType(voteType);
-                commentVoteRepository.save(vote);
+                commentVoteRepository.update(vote);
                 updateCommentVoteCounts(comment);
                 return "Vote changed to " + voteType;
             }

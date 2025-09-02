@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -56,5 +57,92 @@ public class AuthController {
             error.put("error", "Invalid credentials");
             return ResponseEntity.badRequest().body(error);
         }
+    }
+
+    @GetMapping("/debug")
+    public ResponseEntity<?> debugAuth(@RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                String email = jwtUtil.extractUsername(token);
+                boolean isValid = jwtUtil.validateToken(token, userDetailsService.loadUserByUsername(email));
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("token", token);
+                response.put("email", email);
+                response.put("isValid", isValid);
+                response.put("message", "Token debug information");
+                
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Missing or invalid Authorization header"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Debug failed: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/test-token")
+    public ResponseEntity<?> testToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                
+                // Test the token directly
+                jwtUtil.testSpecificToken(token);
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "Token test completed - check console logs");
+                response.put("token", token);
+                
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Missing or invalid Authorization header"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Token test failed: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/debug-step-by-step")
+    public ResponseEntity<?> debugStepByStep(@RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                
+                // Debug the token step by step
+                jwtUtil.debugTokenStepByStep(token);
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "Step-by-step debug completed - check console logs");
+                response.put("token", token);
+                response.put("tokenLength", token.length());
+                response.put("tokenParts", token.split("\\.").length);
+                
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Missing or invalid Authorization header"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Debug failed: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/test-auth")
+    public ResponseEntity<?> testAuthentication(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (authentication != null) {
+            response.put("authenticated", true);
+            response.put("principal", authentication.getPrincipal());
+            response.put("authorities", authentication.getAuthorities());
+            response.put("name", authentication.getName());
+            response.put("message", "Authentication successful!");
+        } else {
+            response.put("authenticated", false);
+            response.put("message", "No authentication found!");
+        }
+        
+        return ResponseEntity.ok(response);
     }
 }

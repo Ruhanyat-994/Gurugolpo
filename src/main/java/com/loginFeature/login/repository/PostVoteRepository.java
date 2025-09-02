@@ -52,6 +52,11 @@ public class PostVoteRepository {
         return vote;
     }
     
+    public void update(PostVote vote) {
+        String sql = "UPDATE post_votes SET vote_type = ? WHERE id = ?";
+        jdbcTemplate.update(sql, vote.getVoteType().name(), vote.getId());
+    }
+    
     public Optional<PostVote> findByPostIdAndUserId(Long postId, Long userId) {
         String sql = "SELECT * FROM post_votes WHERE post_id = ? AND user_id = ?";
         try {

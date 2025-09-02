@@ -41,7 +41,7 @@ public class AdminService {
         
         // Get post counts by university
         Map<String, Long> postCountsByUniversity = new HashMap<>();
-        List<User> users = userRepository.findByRole(User.UserRole.STUDENT);
+        List<User> users = userRepository.findByRole(User.UserRole.USER);
         for (User user : users) {
             String university = user.getUniversity();
             long count = postRepository.countByUniversity(university);

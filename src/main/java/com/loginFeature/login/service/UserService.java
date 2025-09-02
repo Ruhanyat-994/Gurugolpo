@@ -32,7 +32,7 @@ public class UserService {
         newUser.setUsername(registrationDto.getUsername());
         newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         newUser.setUniversity(registrationDto.getUniversity());
-        newUser.setRole(User.UserRole.STUDENT);
+        newUser.setRole(User.UserRole.USER);
         newUser.setIsActive(true);
         newUser.setCreatedAt(LocalDateTime.now());
         newUser.setUpdatedAt(LocalDateTime.now());
@@ -80,6 +80,18 @@ public class UserService {
             User user = userOpt.get();
             user.setRole(User.UserRole.MODERATOR);
             user.setUniversity(university);
+            user.setUpdatedAt(LocalDateTime.now());
+            userRepository.update(user);
+            return user;
+        }
+        throw new IllegalArgumentException("User not found");
+    }
+    
+    public User promoteToAdmin(Long userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setRole(User.UserRole.ADMIN);
             user.setUpdatedAt(LocalDateTime.now());
             userRepository.update(user);
             return user;

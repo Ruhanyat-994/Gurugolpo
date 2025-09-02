@@ -51,6 +51,11 @@ public class CommentVoteRepository {
         vote.setId(keyHolder.getKey().longValue());
         return vote;
     }
+    
+    public void update(CommentVote vote) {
+        String sql = "UPDATE comment_votes SET vote_type = ? WHERE id = ?";
+        jdbcTemplate.update(sql, vote.getVoteType().name(), vote.getId());
+    }
 
     public Optional<CommentVote> findByCommentIdAndUserId(Long commentId, Long userId) {
         String sql = "SELECT * FROM comment_votes WHERE comment_id = ? AND user_id = ?";
