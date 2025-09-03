@@ -15,6 +15,7 @@ public class PostDto {
     private String content;
     private Long authorId;
     private String authorUsername;
+    private String authorName; // For display purposes
     private String university;
     private String status;
     private Boolean isApproved;
@@ -23,4 +24,10 @@ public class PostDto {
     private Integer voteCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    // Additional fields for frontend
+    private String sentiment;
+    private Boolean verified;
+    private Integer commentCount;
+    private Boolean aiRewritten;
 }

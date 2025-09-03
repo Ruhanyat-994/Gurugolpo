@@ -57,6 +57,7 @@ public class AdminService {
         dashboard.setTotalPosts(postRepository.count());
         dashboard.setTotalUsers(userRepository.count());
         dashboard.setTotalComments(commentRepository.count());
+        dashboard.setTotalModerators(userRepository.countByRole(User.UserRole.MODERATOR));
         
         return dashboard;
     }

@@ -128,4 +128,19 @@ public class UserRepository {
         String sql = "SELECT COUNT(*) FROM users";
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
+
+    public long countByRole(User.UserRole role) {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, role.name());
+    }
+
+    public List<User> findAll() {
+        String sql = "SELECT * FROM users ORDER BY created_at DESC";
+        return jdbcTemplate.query(sql, userRowMapper);
+    }
+
+    public List<User> findByIsActive(boolean isActive) {
+        String sql = "SELECT * FROM users WHERE is_active = ? ORDER BY created_at DESC";
+        return jdbcTemplate.query(sql, userRowMapper, isActive);
+    }
 }

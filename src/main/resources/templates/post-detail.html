@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{post.title}} - Gurugolpo</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post-detail.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-carrot"></i>
+                    <span>Deshi Mula</span>
+                </div>
+                <h1 class="brand-name">Gurugolpo</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/create-post" class="nav-link">Share Story</a>
+                <a href="/want-to-know" class="nav-link">Want to Know</a>
+                <a href="/summary" class="nav-link">Summary</a>
+                <a href="/advertise" class="nav-link">Advertise</a>
+                <a href="/login" class="nav-link">Signin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Back Button -->
+    <div class="back-section">
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <!-- Post Content -->
+    <div class="post-detail-container">
+        <article class="post-detail">
+            <div class="post-header">
+                <h1 class="post-title">{{post.title}}</h1>
+                <div class="post-meta">
+                    <span class="author">by {{post.authorName}}</span>
+                </div>
+                <div class="post-tags">
+                    <span class="company-tag">{{post.university}}</span>
+                    <span class="sentiment-tag {{post.sentiment}}">{{post.sentiment}}</span>
+                </div>
+                {{#post.aiRewritten}}
+                <div class="ai-note">[Rewritten using AI for obvious reasons]</div>
+                {{/post.aiRewritten}}
+            </div>
+            
+            <div class="post-content">
+                <div class="post-body">
+                    {{post.content}}
+                </div>
+            </div>
+        </article>
+
+        <!-- Voting Section -->
+        <div class="voting-section">
+            <button class="vote-btn agree" data-post-id="{{post.id}}">
+                <i class="fas fa-thumbs-up"></i>
+                <span>Agree <span class="vote-count">{{post.upvotes}}</span></span>
+            </button>
+            <button class="vote-btn disagree" data-post-id="{{post.id}}">
+                <i class="fas fa-thumbs-down"></i>
+                <span>Disagree <span class="vote-count">{{post.downvotes}}</span></span>
+            </button>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <h2 class="comments-title">Comments</h2>
+            
+            <!-- Comment Guidelines -->
+            <div class="comment-guidelines">
+                <h3>Guidelines</h3>
+                <p>To ensure respectful and constructive discussions, we request all users to follow these guidelines when posting comments:</p>
+                <ul>
+                    <li>Do not mention individuals or companies by direct name; for individuals refer to them by their role or designation instead.</li>
+                    <li>Avoid abusive language or offensive remarks of any kind.</li>
+                    <li>Personal attacks or targeted harassment will not be tolerated.</li>
+                </ul>
+                <p>Comments that violate these guidelines will be removed immediately without prior notice.</p>
+            </div>
+
+            <!-- Comment Input -->
+            <div class="comment-input-section">
+                <div class="comment-editor">
+                    <textarea id="commentText" placeholder="Share your thoughts..." class="comment-textarea"></textarea>
+                </div>
+                <button id="postCommentBtn" class="post-comment-btn">Post Comment</button>
+            </div>
+
+            <!-- Comments List -->
+            <div class="comments-list" id="commentsList">
+                {{#comments}}
+                <div class="comment-item" data-comment-id="{{id}}">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            <div class="author-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="author-name">{{authorName}}</span>
+                        </div>
+                        <span class="comment-date">{{createdAt}}</span>
+                    </div>
+                    <div class="comment-content">
+                        <p>{{content}}</p>
+                    </div>
+                    <div class="comment-actions">
+                        <button class="comment-vote-btn upvote" data-comment-id="{{id}}">
+                            <i class="fas fa-arrow-up"></i>
+                            <span class="vote-count">{{upvotes}}</span>
+                        </button>
+                        <button class="comment-vote-btn downvote" data-comment-id="{{id}}">
+                            <i class="fas fa-arrow-down"></i>
+                            <span class="vote-count">{{downvotes}}</span>
+                        </button>
+                    </div>
+                </div>
+                {{/comments}}
+            </div>
+
+            <!-- Sort Options -->
+            <div class="comments-sort">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" class="sort-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="popular">Most Popular</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/post-detail.js"></script>
+</body>
+</html>

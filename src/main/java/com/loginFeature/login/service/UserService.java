@@ -98,4 +98,25 @@ public class UserService {
         }
         throw new IllegalArgumentException("User not found");
     }
+
+    // Additional methods for web controller
+    public long getModeratorCount() {
+        return userRepository.countByRole(User.UserRole.MODERATOR);
+    }
+
+    public long getAdminCount() {
+        return userRepository.countByRole(User.UserRole.ADMIN);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public List<User> getActiveUsers() {
+        return userRepository.findByIsActive(true);
+    }
+
+    public List<User> getInactiveUsers() {
+        return userRepository.findByIsActive(false);
+    }
 }

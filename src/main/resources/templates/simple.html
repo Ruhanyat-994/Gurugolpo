@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Simple Test</title>
+</head>
+<body>
+    <h1>Template Engine Working!</h1>
+    <p>Posts count: <span th:text="${posts.size()}">0</span></p>
+    <div th:each="post : ${posts}">
+        <h2 th:text="${post.title}">Title</h2>
+        <p th:text="${post.content}">Content</p>
+        <p>Author: <span th:text="${post.authorName}">Author</span></p>
+    </div>
+</body>
+</html>

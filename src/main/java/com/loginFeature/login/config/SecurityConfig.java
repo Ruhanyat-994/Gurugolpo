@@ -45,7 +45,11 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Public web pages
+                        .requestMatchers("/", "/home", "/login", "/post/**", "/want-to-know", "/summary", "/advertise", "/forgot-password", "/register", "/terms", "/privacy", "/error", "/test").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico").permitAll()
+                        
+                        // Public API endpoints
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/debug").permitAll()

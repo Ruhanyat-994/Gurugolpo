@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Story - Gurugolpo</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/create-post.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-carrot"></i>
+                    <span>Deshi Mula</span>
+                </div>
+                <h1 class="brand-name">Gurugolpo</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/want-to-know" class="nav-link">Want to Know</a>
+                <a href="/summary" class="nav-link">Summary</a>
+                <a href="/advertise" class="nav-link">Advertise</a>
+                <a href="/login" class="nav-link">Signin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Guidelines Section -->
+    <div class="guidelines-section">
+        <div class="guidelines-container">
+            <h2>Guidelines</h2>
+            <p>To maintain professionalism and respect privacy, we kindly request that you refrain from mentioning individual names in your reviews. Please refer to individuals by their roles or designations instead.</p>
+            <p>Thank you for being part of the Deshi Mula.</p>
+        </div>
+    </div>
+
+    <!-- Create Post Form -->
+    <div class="create-post-container">
+        <form id="createPostForm" class="create-post-form">
+            <div class="form-row">
+                <label for="vibe" class="form-label">Vibe</label>
+                <select id="vibe" name="vibe" class="form-select" required>
+                    <option value="">Select Vibe</option>
+                    <option value="positive">Positive</option>
+                    <option value="negative">Negative</option>
+                    <option value="neutral">Neutral</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="company" class="form-label">
+                    Company
+                    <i class="fas fa-question-circle" title="Enter the company name"></i>
+                </label>
+                <input type="text" id="company" name="company" class="form-input" required>
+            </div>
+
+            <div class="form-row">
+                <label for="designation" class="form-label">Designation</label>
+                <input type="text" id="designation" name="designation" placeholder="Designation/Position in the company" class="form-input" required>
+            </div>
+
+            <div class="form-row">
+                <label for="title" class="form-label">Story Title</label>
+                <input type="text" id="title" name="title" placeholder="One line title of your story" class="form-input" required>
+            </div>
+
+            <div class="form-row">
+                <label for="content" class="form-label">Story</label>
+                <div class="rich-text-editor">
+                    <textarea id="content" name="content" class="form-textarea"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="termsCheckbox" name="terms" required>
+                    <span class="checkmark"></span>
+                    By clicking here, I state that I have read and understood the 
+                    <a href="/terms" class="terms-link">Terms & Conditions</a> and 
+                    <a href="/privacy" class="terms-link">Privacy Policy</a>.
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="share-btn">
+                    <i class="fas fa-share"></i>
+                    Share
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="message-container" style="display: none;">
+        <div id="messageContent" class="message-content"></div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/create-post.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@ public class SecurityHeadersConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SecurityHeadersInterceptor());
+        // Temporarily disabled to test template rendering
+        // registry.addInterceptor(new SecurityHeadersInterceptor());
     }
 }

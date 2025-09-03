@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Gurugolpo</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-carrot"></i>
+                    <span>Deshi Mula</span>
+                </div>
+                <h1 class="brand-name">Gurugolpo</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/admin/dashboard" class="nav-link active">Admin Dashboard</a>
+                <a href="/logout" class="nav-link">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-container">
+        <div class="admin-sidebar">
+            <h2>Admin Panel</h2>
+            <nav class="admin-nav">
+                <a href="#dashboard" class="admin-nav-link active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="#users" class="admin-nav-link" data-section="users">
+                    <i class="fas fa-users"></i>
+                    User Management
+                </a>
+                <a href="#posts" class="admin-nav-link" data-section="posts">
+                    <i class="fas fa-file-alt"></i>
+                    Post Management
+                </a>
+                <a href="#comments" class="admin-nav-link" data-section="comments">
+                    <i class="fas fa-comments"></i>
+                    Comment Management
+                </a>
+                <a href="#settings" class="admin-nav-link" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </nav>
+        </div>
+
+        <div class="admin-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="admin-section active">
+                <h2>Dashboard Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalUsers">{{dashboard.totalUsers}}</h3>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalPosts">{{dashboard.totalPosts}}</h3>
+                            <p>Total Posts</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalComments">{{dashboard.totalComments}}</h3>
+                            <p>Total Comments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalModerators">{{dashboard.totalModerators}}</h3>
+                            <p>Moderators</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div id="users-section" class="admin-section">
+                <h2>User Management</h2>
+                <div class="section-actions">
+                    <button id="refreshUsers" class="btn btn-primary">
+                        <i class="fas fa-sync"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>University</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Post Management Section -->
+            <div id="posts-section" class="admin-section">
+                <h2>Post Management</h2>
+                <div class="section-actions">
+                    <button id="refreshPosts" class="btn btn-primary">
+                        <i class="fas fa-sync"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table" id="postsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>University</th>
+                                <th>Sentiment</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="postsTableBody">
+                            <!-- Posts will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Comment Management Section -->
+            <div id="comments-section" class="admin-section">
+                <h2>Comment Management</h2>
+                <div class="section-actions">
+                    <button id="refreshComments" class="btn btn-primary">
+                        <i class="fas fa-sync"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table" id="commentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Content</th>
+                                <th>Author</th>
+                                <th>Post</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commentsTableBody">
+                            <!-- Comments will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="admin-section">
+                <h2>System Settings</h2>
+                <div class="settings-container">
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <input type="checkbox" id="postManagementEnabled" class="setting-checkbox">
+                            <span class="checkmark"></span>
+                            Enable Post Management
+                        </label>
+                        <p class="setting-description">Allow users to create and manage posts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="promoteUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Promote User to Moderator</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="promoteUserForm">
+                    <div class="form-group">
+                        <label for="promoteUniversity">University:</label>
+                        <input type="text" id="promoteUniversity" name="university" class="form-input" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelPromote">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Promote</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="message-container" style="display: none;">
+        <div id="messageContent" class="message-content"></div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,9 @@ public class PostService {
     
     @Autowired
     private SystemSettingsRepository systemSettingsRepository;
+    
+    @Autowired
+    private VotingService votingService;
 
     public Post createPost(PostCreateDto postDto, Long authorId) {
         Optional<User> userOpt = userRepository.findById(authorId);
@@ -56,7 +60,16 @@ public class PostService {
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
         
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        
+        // Initialize vote counts in the voting system
+        try {
+            votingService.getPostVoteCount(savedPost.getId());
+        } catch (Exception e) {
+            // This is expected for new posts with no votes yet
+        }
+        
+        return savedPost;
     }
 
     public Optional<Post> getPostById(Long id) {
@@ -167,5 +180,64 @@ public class PostService {
         return posts.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    // Additional methods for web controller
+    public PostDto convertToDtoWithAuthorName(Post post) {
+        PostDto dto = convertToDto(post);
+        
+        // Get author name
+        Optional<User> author = userRepository.findById(post.getAuthorId());
+        dto.setAuthorName(author.map(User::getUsername).orElse("Anonymous"));
+        
+        // Get actual vote counts from VotingService
+        try {
+            Map<String, Long> voteCounts = votingService.getPostVoteCount(post.getId());
+            dto.setUpvotes(voteCounts.get("upvotes").intValue());
+            dto.setDownvotes(voteCounts.get("downvotes").intValue());
+            dto.setVoteCount(voteCounts.get("voteCount").intValue());
+        } catch (Exception e) {
+            // Fallback to post's stored values if voting service fails
+            dto.setUpvotes(post.getUpvotes());
+            dto.setDownvotes(post.getDownvotes());
+            dto.setVoteCount(post.getVoteCount());
+        }
+        
+        // Determine sentiment (you might want to implement this logic)
+        dto.setSentiment("neutral"); // Placeholder
+        
+        // Set verification status (you might want to implement this logic)
+        dto.setVerified(false); // Placeholder
+        
+        // Set comment count (placeholder for now)
+        dto.setCommentCount(0); // Placeholder
+        
+        // Set AI rewritten flag (placeholder for now)
+        dto.setAiRewritten(false); // Placeholder
+        
+        return dto;
+    }
+
+    public List<PostDto> convertToDtoListWithAuthorNames(List<Post> posts) {
+        return posts.stream()
+                .map(this::convertToDtoWithAuthorName)
+                .collect(Collectors.toList());
+    }
+    
+    // Method to sync vote counts for all posts (useful for initialization)
+    public void syncAllPostVoteCounts() {
+        List<Post> allPosts = postRepository.findAll();
+        for (Post post : allPosts) {
+            try {
+                Map<String, Long> voteCounts = votingService.getPostVoteCount(post.getId());
+                post.setUpvotes(voteCounts.get("upvotes").intValue());
+                post.setDownvotes(voteCounts.get("downvotes").intValue());
+                post.setVoteCount(voteCounts.get("voteCount").intValue());
+                postRepository.update(post);
+            } catch (Exception e) {
+                // Skip posts that can't be synced
+                System.err.println("Failed to sync vote counts for post " + post.getId() + ": " + e.getMessage());
+            }
+        }
     }
 }

@@ -17,4 +17,5 @@ public class AdminDashboardDto {
     private Long totalPosts;
     private Long totalUsers;
     private Long totalComments;
+    private Long totalModerators;
 }

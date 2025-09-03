@@ -28,6 +28,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // List of public endpoints to skip JWT validation
     private static final List<String> PUBLIC_URLS = List.of(
+            // Web pages
+            "/",
+            "/home",
+            "/login",
+            "/post/",
+            "/want-to-know",
+            "/summary",
+            "/advertise",
+            "/forgot-password",
+            "/register",
+            "/terms",
+            "/privacy",
+            // Static resources
+            "/favicon.ico",
+            "/css/",
+            "/js/",
+            "/images/",
+            "/static/",
+            // API endpoints
             "/api/public/register",
             "/api/auth/login",
             "/api/auth/debug",
@@ -35,6 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/auth/debug-step-by-step",
             "/api/auth/test-auth",
             "/api/universities",
+            // Swagger/OpenAPI
             "/v2/api-docs",
             "/v3/api-docs",
             "/swagger-ui",
@@ -52,11 +72,19 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("=== JWT Filter Processing ===");
         System.out.println("Path: " + path);
         System.out.println("Method: " + method);
-        System.out.println("Is Public Endpoint: " + isPublicEndpoint(path, method));
 
-        // Skip JWT validation for public endpoints
+        // Only apply JWT filter to API endpoints
+        if (!path.startsWith("/api/")) {
+            System.out.println("Not an API endpoint, skipping JWT filter");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        System.out.println("Is Public API Endpoint: " + isPublicEndpoint(path, method));
+
+        // Skip JWT validation for public API endpoints
         if (isPublicEndpoint(path, method)) {
-            System.out.println("Skipping JWT validation for public endpoint");
+            System.out.println("Skipping JWT validation for public API endpoint");
             filterChain.doFilter(request, response);
             return;
         }
@@ -163,6 +191,29 @@ public class JwtFilter extends OncePerRequestFilter {
                 System.out.println("✅ Public GET endpoint detected");
                 return true;
             }
+        }
+        
+        // Check for web pages and static resources
+        if (path.equals("/") || 
+            path.equals("/home") ||
+            path.equals("/login") || 
+            path.equals("/error") ||
+            path.equals("/favicon.ico") ||
+            path.equals("/test") ||
+            path.startsWith("/post/") ||
+            path.equals("/want-to-know") ||
+            path.equals("/summary") ||
+            path.equals("/advertise") ||
+            path.equals("/forgot-password") ||
+            path.equals("/register") ||
+            path.equals("/terms") ||
+            path.equals("/privacy") ||
+            path.startsWith("/css/") ||
+            path.startsWith("/js/") ||
+            path.startsWith("/images/") ||
+            path.startsWith("/static/")) {
+            System.out.println("✅ Public web page or static resource detected");
+            return true;
         }
         
         // Check exact public URLs and Swagger UI paths
