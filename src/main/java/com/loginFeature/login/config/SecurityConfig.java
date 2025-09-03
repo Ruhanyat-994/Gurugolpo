@@ -52,6 +52,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/test-token").permitAll()
                         .requestMatchers("/api/auth/debug-step-by-step").permitAll()
                         .requestMatchers("/api/auth/test-auth").permitAll()
+                        .requestMatchers("/api/auth/test-password").permitAll()
+                        .requestMatchers("/api/auth/debug-bcrypt").permitAll()
+                        .requestMatchers("/api/auth/generate-bcrypt").permitAll()
                         .requestMatchers("/api/posts").permitAll() // Allow viewing posts without auth
                         .requestMatchers("/api/posts/search/**").permitAll()
                         .requestMatchers("/api/posts/university/**").permitAll()
@@ -94,7 +97,24 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new PasswordEncoder() {
+            private final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+            
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return bcrypt.encode(rawPassword);
+            }
+            
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                // If the stored password looks like BCrypt, use BCrypt
+                if (encodedPassword.startsWith("$2a$") || encodedPassword.startsWith("$2b$") || encodedPassword.startsWith("$2y$")) {
+                    return bcrypt.matches(rawPassword, encodedPassword);
+                }
+                // Otherwise, do plain text comparison (for testing)
+                return rawPassword.toString().equals(encodedPassword);
+            }
+        };
     }
 
     @Bean

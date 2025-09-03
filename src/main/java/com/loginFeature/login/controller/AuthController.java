@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -33,6 +34,9 @@ public class AuthController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
@@ -144,5 +148,79 @@ public class AuthController {
         }
         
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/test-password")
+    public ResponseEntity<?> testPassword(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            String password = request.get("password");
+            
+            // Get user from database
+            Optional<User> userOpt = userService.getUserByEmail(email);
+            if (!userOpt.isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
+            }
+            
+            User user = userOpt.get();
+            String storedPassword = user.getPassword();
+            
+            // Test password matching
+            boolean matches = passwordEncoder.matches(password, storedPassword);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("email", email);
+            response.put("storedPassword", storedPassword);
+            response.put("providedPassword", password);
+            response.put("matches", matches);
+            response.put("userActive", user.getIsActive());
+            response.put("userRole", user.getRole());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/debug-bcrypt")
+    public ResponseEntity<?> debugBcrypt() {
+        try {
+            // Test with known working hash
+            String testPassword = "admin";
+            String knownHash = "$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HFz8rJ7Jmt3yV1zXfVhK2";
+            
+            boolean matches = passwordEncoder.matches(testPassword, knownHash);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("testPassword", testPassword);
+            response.put("knownHash", knownHash);
+            response.put("matches", matches);
+            response.put("passwordEncoderClass", passwordEncoder.getClass().getName());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/generate-bcrypt")
+    public ResponseEntity<?> generateBcrypt(@RequestParam String password) {
+        try {
+            // Generate a new BCrypt hash for the given password
+            String hash = passwordEncoder.encode(password);
+            
+            // Test if the generated hash matches the password
+            boolean matches = passwordEncoder.matches(password, hash);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("password", password);
+            response.put("generatedHash", hash);
+            response.put("matches", matches);
+            response.put("passwordEncoderClass", passwordEncoder.getClass().getName());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }
