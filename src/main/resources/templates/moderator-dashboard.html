@@ -1,31 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderator Dashboard - Gurugolpo</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/moderator.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/moderator.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fas fa-carrot"></i>
-                    <span>Deshi Mula</span>
-                </div>
-                <h1 class="brand-name">Gurugolpo</h1>
-            </div>
-            <nav class="nav-menu">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/moderator/dashboard" class="nav-link active">Moderator Dashboard</a>
-                <a href="/logout" class="nav-link">Logout</a>
-            </nav>
-        </div>
-    </header>
+    <!-- Header and Community Message -->
+    <div th:replace="fragments/header :: header"></div>
 
     <!-- Moderator Dashboard -->
     <div class="moderator-container">

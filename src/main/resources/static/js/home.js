@@ -1,11 +1,12 @@
 // Home Page JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
-    const vibeFilter = document.getElementById('vibeFilter');
+    const universityFilter = document.getElementById('universityFilter');
     const searchBtn = document.getElementById('searchBtn');
     const postsList = document.getElementById('postsList');
     const noPostsMessage = document.getElementById('noPostsMessage');
     const loadingSpinner = document.getElementById('loadingSpinner');
+    const loginPopup = document.getElementById('loginPopup');
 
     let currentPosts = [];
     let filteredPosts = [];
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Search functionality
         const debouncedSearch = UIUtils.debounce(performSearch, 300);
         searchInput.addEventListener('input', debouncedSearch);
-        vibeFilter.addEventListener('change', performSearch);
+        universityFilter.addEventListener('change', performSearch);
         searchBtn.addEventListener('click', performSearch);
 
         // Vote buttons
@@ -166,18 +167,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function performSearch() {
         const searchTerm = searchInput.value.trim().toLowerCase();
-        const selectedVibe = vibeFilter.value;
+        const selectedUniversity = universityFilter.value;
 
         filteredPosts = currentPosts.filter(post => {
             const matchesSearch = !searchTerm || 
-                post.title.toLowerCase().includes(searchTerm) ||
-                post.content.toLowerCase().includes(searchTerm) ||
-                (post.university && post.university.toLowerCase().includes(searchTerm));
+                post.title.toLowerCase().includes(searchTerm);
 
-            const matchesVibe = !selectedVibe || 
-                (post.sentiment && post.sentiment.toLowerCase() === selectedVibe);
+            const matchesUniversity = !selectedUniversity || 
+                (post.university && post.university.toLowerCase() === selectedUniversity.toLowerCase());
 
-            return matchesSearch && matchesVibe;
+            return matchesSearch && matchesUniversity;
         });
 
         renderPosts();
@@ -197,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Check if user is authenticated
             const isAuthenticated = await api.checkAuth();
             if (!isAuthenticated) {
-                UIUtils.showError('Please login to vote on posts.');
+                showLoginModal();
                 return;
             }
 
@@ -316,5 +315,278 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`Page loaded in ${loadTime}ms`);
         });
     }
+
+    // Search state management
+    function saveSearchState() {
+        const searchState = {
+            searchTerm: searchInput.value,
+            selectedUniversity: universityFilter.value
+        };
+        localStorage.setItem('gurugolpo_search_state', JSON.stringify(searchState));
+    }
+
+    function loadSearchState() {
+        try {
+            const savedState = localStorage.getItem('gurugolpo_search_state');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                if (state.searchTerm) {
+                    searchInput.value = state.searchTerm;
+                }
+                if (state.selectedUniversity) {
+                    universityFilter.value = state.selectedUniversity;
+                }
+                performSearch();
+            }
+        } catch (error) {
+            console.error('Failed to load search state:', error);
+        }
+    }
+
+    // Login popup functions
+    function showLoginPopup() {
+        if (loginPopup) {
+            loginPopup.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+    }
+
+    function closeLoginPopup() {
+        if (loginPopup) {
+            loginPopup.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+    }
+
+    // Handle comment button clicks
+    function handleCommentClick(event) {
+        const commentBtn = event.target.closest('.comment-count');
+        if (!commentBtn) return;
+
+        // Check if user is authenticated
+        api.checkAuth().then(isAuthenticated => {
+            if (!isAuthenticated) {
+                showLoginModal();
+                return;
+            }
+            // If authenticated, redirect to post detail page for comments
+            const postCard = commentBtn.closest('.post-card');
+            if (postCard) {
+                const postId = postCard.dataset.postId;
+                if (postId) {
+                    window.location.href = `/post/${postId}`;
+                }
+            }
+        }).catch(error => {
+            console.error('Auth check failed:', error);
+            showLoginModal();
+        });
+    }
+
+    // Add event listener for comment clicks
+    postsList.addEventListener('click', handleCommentClick);
+
+    // Close popup when clicking outside
+    if (loginPopup) {
+        loginPopup.addEventListener('click', function(event) {
+            if (event.target === loginPopup) {
+                closeLoginPopup();
+            }
+        });
+    }
+
+    // Close popup with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && loginPopup && loginPopup.style.display === 'flex') {
+            closeLoginPopup();
+        }
+        if (event.key === 'Escape') {
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
+            if (loginModal && loginModal.style.display === 'flex') {
+                closeLoginModal();
+            } else if (registerModal && registerModal.style.display === 'flex') {
+                closeRegisterModal();
+            }
+        }
+    });
+
+    // Handle login modal interactions
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+        // Close modal when clicking outside
+        loginModal.addEventListener('click', function(event) {
+            if (event.target === loginModal) {
+                closeLoginModal();
+            }
+        });
+
+        // Handle login form submission
+        const loginForm = document.getElementById('loginModalForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                const email = document.getElementById('modalEmail').value;
+                const password = document.getElementById('modalPassword').value;
+                
+                try {
+                    // Use existing API login functionality
+                    const response = await api.login(email, password);
+                    if (response.success) {
+                        UIUtils.showSuccess('Login successful!');
+                        closeLoginModal();
+                        // Reload page to update UI state
+                        window.location.reload();
+                    } else {
+                        UIUtils.showError(response.message || 'Login failed');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    UIUtils.showError('Login failed. Please try again.');
+                }
+            });
+        }
+
+        // Handle Google login
+        const googleBtn = document.getElementById('modalGoogleLogin');
+        if (googleBtn) {
+            googleBtn.addEventListener('click', function() {
+                // Implement Google login functionality
+                UIUtils.showError('Google login not implemented yet');
+            });
+        }
+    }
+
+    // Handle register modal interactions
+    const registerModal = document.getElementById('registerModal');
+    if (registerModal) {
+        // Close modal when clicking outside
+        registerModal.addEventListener('click', function(event) {
+            if (event.target === registerModal) {
+                closeRegisterModal();
+            }
+        });
+
+        // Handle register form submission
+        const registerForm = document.getElementById('registerModalForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                const formData = new FormData(registerForm);
+                const registrationData = {
+                    fullName: formData.get('fullName'),
+                    email: formData.get('email'),
+                    university: formData.get('university'),
+                    password: formData.get('password'),
+                    confirmPassword: formData.get('confirmPassword'),
+                    terms: formData.get('terms')
+                };
+
+                // Validate form
+                if (!validateRegistrationForm(registrationData)) {
+                    return;
+                }
+
+                try {
+                    // Use existing API registration functionality
+                    const response = await api.register(registrationData);
+                    if (response.success) {
+                        UIUtils.showSuccess('Account created successfully! Please login with your credentials.');
+                        closeRegisterModal();
+                        // Show login modal after successful registration
+                        setTimeout(() => {
+                            showLoginModal();
+                        }, 1500);
+                    } else {
+                        UIUtils.showError(response.message || 'Registration failed. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    UIUtils.showError('Registration failed. Please try again.');
+                }
+            });
+        }
+
+        // Handle Google registration
+        const googleRegisterBtn = document.getElementById('modalGoogleRegister');
+        if (googleRegisterBtn) {
+            googleRegisterBtn.addEventListener('click', function() {
+                UIUtils.showError('Google registration not implemented yet');
+            });
+        }
+    }
+
+    // Registration form validation
+    function validateRegistrationForm(data) {
+        // Check if passwords match
+        if (data.password !== data.confirmPassword) {
+            UIUtils.showError('Passwords do not match');
+            return false;
+        }
+
+        // Check password strength
+        if (data.password.length < 6) {
+            UIUtils.showError('Password must be at least 6 characters long');
+            return false;
+        }
+
+        // Check if terms are accepted
+        if (!data.terms) {
+            UIUtils.showError('Please accept the Terms & Conditions');
+            return false;
+        }
+
+        // Check if university is selected
+        if (!data.university) {
+            UIUtils.showError('Please select your university');
+            return false;
+        }
+
+        return true;
+    }
+
+    // Make functions globally accessible
+    window.showLoginPopup = showLoginPopup;
+    window.closeLoginPopup = closeLoginPopup;
+    window.showLoginModal = showLoginModal;
+    window.closeLoginModal = closeLoginModal;
+    window.showRegisterModal = showRegisterModal;
+    window.closeRegisterModal = closeRegisterModal;
 });
+
+// Global login modal functions
+function showLoginModal() {
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+        loginModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+}
+
+function closeLoginModal() {
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+        loginModal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+}
+
+// Global register modal functions
+function showRegisterModal() {
+    const registerModal = document.getElementById('registerModal');
+    if (registerModal) {
+        registerModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+}
+
+function closeRegisterModal() {
+    const registerModal = document.getElementById('registerModal');
+    if (registerModal) {
+        registerModal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+}
 

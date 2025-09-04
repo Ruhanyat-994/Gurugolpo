@@ -1,34 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{post.title}} - Gurugolpo</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/post-detail.css">
+    <title th:text="${post.title} + ' - Gurugolpo'">Post Title - Gurugolpo</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/post-detail.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fas fa-carrot"></i>
-                    <span>Deshi Mula</span>
-                </div>
-                <h1 class="brand-name">Gurugolpo</h1>
-            </div>
-            <nav class="nav-menu">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/create-post" class="nav-link">Share Story</a>
-                <a href="/want-to-know" class="nav-link">Want to Know</a>
-                <a href="/summary" class="nav-link">Summary</a>
-                <a href="/advertise" class="nav-link">Advertise</a>
-                <a href="/login" class="nav-link">Signin</a>
-            </nav>
-        </div>
-    </header>
+    <!-- Header and Community Message -->
+    <div th:replace="fragments/header :: header"></div>
 
     <!-- Back Button -->
     <div class="back-section">

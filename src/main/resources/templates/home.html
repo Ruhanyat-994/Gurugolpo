@@ -3,47 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gurugolpo - Deshi Mula</title>
+    <title>Gurugolpo</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/home.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <div class="logo-section">
-                <div class="logo">
-                    <i class="fas fa-carrot"></i>
-                    <span>Deshi Mula</span>
-                </div>
-                <h1 class="brand-name">Gurugolpo</h1>
-            </div>
-            <nav class="nav-menu">
-                <a href="/create-post" class="nav-link">Share Story</a>
-                <a href="/want-to-know" class="nav-link">Want to Know</a>
-                <a href="/summary" class="nav-link">Summary</a>
-                <a href="/advertise" class="nav-link">Advertise</a>
-                <a href="/login" class="nav-link">Signin</a>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Community Message -->
-    <div class="community-message">
-        <p>We encourage our community to visit Want to Know and contribute by helping others.</p>
-    </div>
+    <!-- Header and Community Message -->
+    <div th:replace="fragments/header :: header"></div>
 
     <!-- Search and Filter Section -->
     <div class="search-section">
         <div class="search-container">
             <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search by Company Name or title" class="search-input">
-                <select id="vibeFilter" class="vibe-select">
-                    <option value="">Select Vibe</option>
-                    <option value="positive">Positive</option>
-                    <option value="negative">Negative</option>
-                    <option value="neutral">Neutral</option>
+                <input type="text" id="searchInput" placeholder="Search by title" class="search-input">
+                <select id="universityFilter" class="university-select">
+                    <option value="">Select University</option>
+                    <option th:each="university : ${universities}" th:value="${university.name}" th:text="${university.name}">University</option>
                 </select>
                 <button id="searchBtn" class="search-btn">Search</button>
             </div>
@@ -109,6 +85,23 @@
     <!-- Loading Spinner -->
     <div id="loadingSpinner" class="loading-spinner" style="display: none;">
         <div class="spinner"></div>
+    </div>
+
+    <!-- Login Popup Modal -->
+    <div id="loginPopup" class="login-popup-overlay" style="display: none;">
+        <div class="login-popup-modal">
+            <div class="login-popup-header">
+                <h3>Login Required</h3>
+                <button class="close-popup" onclick="closeLoginPopup()">&times;</button>
+            </div>
+            <div class="login-popup-content">
+                <p>Please login to vote on posts and leave comments.</p>
+                <div class="login-popup-actions">
+                    <a href="/login" class="btn btn-primary">Login</a>
+                    <button class="btn btn-secondary" onclick="closeLoginPopup()">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script th:src="@{/js/api.js}"></script>

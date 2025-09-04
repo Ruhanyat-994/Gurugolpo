@@ -88,6 +88,11 @@ class API {
         return response;
     }
 
+    async register(registrationData) {
+        const response = await this.post('/api/auth/register', registrationData);
+        return response;
+    }
+
     async logout() {
         this.clearToken();
         window.location.href = '/login';

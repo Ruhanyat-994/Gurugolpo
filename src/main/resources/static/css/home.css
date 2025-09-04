@@ -276,17 +276,17 @@
     box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
 }
 
-.vibe-select {
+.university-select {
     padding: 1rem 1.5rem;
     border: 2px solid #e9ecef;
     border-radius: 10px;
     font-size: 1.1rem;
     background-color: #f8f9fa;
-    min-width: 180px;
+    min-width: 220px;
     transition: all 0.3s ease;
 }
 
-.vibe-select:focus {
+.university-select:focus {
     outline: none;
     border-color: #28a745;
     background-color: white;
@@ -377,7 +377,7 @@
     }
     
     .search-input,
-    .vibe-select,
+    .university-select,
     .search-btn {
         width: 100%;
     }

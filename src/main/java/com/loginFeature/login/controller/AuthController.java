@@ -1,6 +1,7 @@
 package com.loginFeature.login.controller;
 
 import com.loginFeature.login.Dto.AuthRequest;
+import com.loginFeature.login.Dto.UserRegistrationDto;
 import com.loginFeature.login.entity.User;
 import com.loginFeature.login.service.UserService;
 import com.loginFeature.login.utility.JwtUtil;
@@ -221,6 +222,66 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserRegistrationDto registrationDto) {
+        try {
+            // Validate input
+            if (registrationDto.getEmail() == null || registrationDto.getEmail().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Email is required"));
+            }
+            
+            if (registrationDto.getPassword() == null || registrationDto.getPassword().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Password is required"));
+            }
+            
+            if (registrationDto.getFullName() == null || registrationDto.getFullName().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Full name is required"));
+            }
+            
+            if (registrationDto.getUniversity() == null || registrationDto.getUniversity().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "University is required"));
+            }
+            
+            if (!registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Passwords do not match"));
+            }
+            
+            if (registrationDto.getPassword().length() < 6) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Password must be at least 6 characters long"));
+            }
+            
+            // Check if user already exists
+            Optional<User> existingUser = userService.getUserByEmail(registrationDto.getEmail());
+            if (existingUser.isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "User with this email already exists"));
+            }
+            
+            // Create new user
+            User newUser = new User();
+            newUser.setEmail(registrationDto.getEmail());
+            newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+            newUser.setFullName(registrationDto.getFullName());
+            newUser.setUniversity(registrationDto.getUniversity());
+            newUser.setRole(User.UserRole.USER); // Default role
+            newUser.setIsActive(true);
+            
+            // Save user
+            User savedUser = userService.createUser(newUser);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "User registered successfully");
+            response.put("user", savedUser);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("Registration error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("error", "Registration failed: " + e.getMessage()));
         }
     }
 

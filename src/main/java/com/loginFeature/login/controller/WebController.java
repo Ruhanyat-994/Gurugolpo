@@ -2,8 +2,10 @@ package com.loginFeature.login.controller;
 
 import com.loginFeature.login.Dto.PostDto;
 import com.loginFeature.login.entity.Post;
+import com.loginFeature.login.entity.University;
 import com.loginFeature.login.entity.User;
 import com.loginFeature.login.service.PostService;
+import com.loginFeature.login.service.UniversityService;
 import com.loginFeature.login.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +28,12 @@ public class WebController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UniversityService universityService;
+
     @GetMapping("/")
     public String home(Model model, @RequestParam(required = false) String search, 
-                      @RequestParam(required = false) String vibe) {
+                      @RequestParam(required = false) String university) {
         System.out.println("=== WebController.home() called ===");
         try {
             List<Post> posts;
@@ -36,11 +41,11 @@ public class WebController {
             if (search != null && !search.trim().isEmpty()) {
                 System.out.println("Searching posts with keyword: " + search);
                 posts = postService.searchPosts(search.trim());
-            } else if (vibe != null && !vibe.trim().isEmpty()) {
-                System.out.println("Filtering posts by vibe: " + vibe);
-                // Filter by sentiment if needed
+            } else if (university != null && !university.trim().isEmpty()) {
+                System.out.println("Filtering posts by university: " + university);
+                // Filter by university if needed
                 posts = postService.getAllPosts();
-                // You could add sentiment filtering here
+                // You could add university filtering here
             } else {
                 System.out.println("Getting all posts");
                 posts = postService.getAllPosts();
@@ -52,13 +57,19 @@ public class WebController {
             List<PostDto> postDtos = postService.convertToDtoListWithAuthorNames(posts);
             System.out.println("Converted to " + postDtos.size() + " DTOs");
             
+            // Get all active universities for the dropdown
+            List<University> universities = universityService.getAllActiveUniversities();
+            System.out.println("Found " + universities.size() + " universities");
+            
             model.addAttribute("posts", postDtos);
-            System.out.println("Added posts to model, returning home template");
+            model.addAttribute("universities", universities);
+            System.out.println("Added posts and universities to model, returning home template");
             return "home";
         } catch (Exception e) {
             System.err.println("ERROR in WebController.home(): " + e.getMessage());
             e.printStackTrace();
             model.addAttribute("posts", List.of());
+            model.addAttribute("universities", List.of());
             return "home";
         }
     }
@@ -185,8 +196,18 @@ public class WebController {
     }
 
     @GetMapping("/register")
-    public String register() {
-        return "redirect:/login"; // Placeholder
+    public String register(Model model) {
+        try {
+            // Get all active universities for the dropdown
+            List<University> universities = universityService.getAllActiveUniversities();
+            model.addAttribute("universities", universities);
+            return "register";
+        } catch (Exception e) {
+            System.err.println("ERROR in WebController.register(): " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("universities", List.of());
+            return "register";
+        }
     }
 
     @GetMapping("/terms")

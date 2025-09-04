@@ -23,13 +23,11 @@ public class UserService {
         if (userRepository.existsByEmail(registrationDto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
-        if (userRepository.existsByUsername(registrationDto.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
-        }
         
         User newUser = new User();
         newUser.setEmail(registrationDto.getEmail());
-        newUser.setUsername(registrationDto.getUsername());
+        newUser.setFullName(registrationDto.getFullName());
+        newUser.setUsername(registrationDto.getEmail()); // Use email as username
         newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         newUser.setUniversity(registrationDto.getUniversity());
         newUser.setRole(User.UserRole.USER);
@@ -38,6 +36,12 @@ public class UserService {
         newUser.setUpdatedAt(LocalDateTime.now());
         
         return userRepository.save(newUser);
+    }
+
+    public User createUser(User user) {
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(user);
     }
 
     public Optional<User> getUserByEmail(String email) {
