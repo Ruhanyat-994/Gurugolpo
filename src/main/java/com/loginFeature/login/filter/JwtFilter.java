@@ -48,6 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/static/",
             // API endpoints
             "/api/public/register",
+            "/api/auth/register",
             "/api/auth/login",
             "/api/auth/debug",
             "/api/auth/test-token",
@@ -180,6 +181,12 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("=== Checking if endpoint is public ===");
         System.out.println("Path: " + path);
         System.out.println("Method: " + method);
+        
+        // Allow registration endpoint without authentication
+        if (path.equals("/api/auth/register") && "POST".equalsIgnoreCase(method)) {
+            System.out.println("✅ Public registration endpoint detected");
+            return true;
+        }
         
         // Allow only specific read-only GET requests to posts without authentication
         if ("GET".equalsIgnoreCase(method)) {
