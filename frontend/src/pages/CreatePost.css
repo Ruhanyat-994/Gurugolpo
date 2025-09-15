@@ -1,0 +1,257 @@
+.create-post-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.create-post-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.create-post-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.create-post-title i {
+  color: #3b82f6;
+}
+
+.create-post-subtitle {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.create-post-form-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.create-post-form {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.form-label i {
+  color: #3b82f6;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background-color: #f8fafc;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.character-count {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: right;
+}
+
+.content-editor {
+  border: 2px solid #e2e8f0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #f8fafc;
+}
+
+.content-editor:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.content-editor .ql-toolbar {
+  border-bottom: 1px solid #e2e8f0;
+  background-color: white;
+}
+
+.content-editor .ql-container {
+  border: none;
+  background-color: white;
+}
+
+.content-editor .ql-editor {
+  min-height: 300px;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.content-editor .ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: normal;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.posting-guidelines {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  padding: 2rem;
+  position: sticky;
+  top: 2rem;
+}
+
+.guidelines-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.guidelines-title i {
+  color: #f59e0b;
+}
+
+.guidelines-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guidelines-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+.guidelines-list li i {
+  color: #10b981;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .create-post-form-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .posting-guidelines {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .create-post-container {
+    padding: 0 0.5rem;
+  }
+
+  .create-post-header {
+    margin-bottom: 2rem;
+  }
+
+  .create-post-title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .create-post-title i {
+    font-size: 2.5rem;
+  }
+
+  .create-post-subtitle {
+    font-size: 1rem;
+  }
+
+  .create-post-form {
+    padding: 1.5rem;
+  }
+
+  .posting-guidelines {
+    padding: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-post-title {
+    font-size: 1.75rem;
+  }
+
+  .create-post-title i {
+    font-size: 2rem;
+  }
+
+  .create-post-form {
+    padding: 1rem;
+  }
+
+  .posting-guidelines {
+    padding: 1rem;
+  }
+
+  .content-editor .ql-editor {
+    min-height: 250px;
+  }
+}
