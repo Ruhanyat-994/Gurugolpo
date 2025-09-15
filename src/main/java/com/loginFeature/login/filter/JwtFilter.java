@@ -188,13 +188,14 @@ public class JwtFilter extends OncePerRequestFilter {
             return true;
         }
         
-        // Allow only specific read-only GET requests to posts without authentication
+        // Allow only specific read-only GET requests to posts and comments without authentication
         if ("GET".equalsIgnoreCase(method)) {
             // Allow viewing posts, searching posts, and university-specific posts
             if (path.equals("/api/posts") || 
                 path.startsWith("/api/posts/search") || 
                 path.startsWith("/api/posts/university/") ||
-                path.matches("/api/posts/\\d+")) { // Allow viewing specific post by ID
+                path.matches("/api/posts/\\d+") || // Allow viewing specific post by ID
+                path.matches("/api/comments/\\d+")) { // Allow viewing comments for specific post
                 System.out.println("✅ Public GET endpoint detected");
                 return true;
             }

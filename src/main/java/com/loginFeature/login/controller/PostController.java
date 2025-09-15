@@ -53,7 +53,7 @@ public class PostController {
     @GetMapping
     public ResponseEntity<List<PostDto>> getAllPosts() {
         List<Post> posts = postService.getAllPosts();
-        List<PostDto> postDtos = postService.convertToDtoList(posts);
+        List<PostDto> postDtos = postService.convertToDtoListWithAuthorNames(posts);
         return ResponseEntity.ok(postDtos);
     }
 
@@ -61,7 +61,7 @@ public class PostController {
     public ResponseEntity<?> getPostById(@PathVariable Long id) {
         Optional<Post> post = postService.getPostById(id);
         if (post.isPresent()) {
-            PostDto postDto = postService.convertToDto(post.get());
+            PostDto postDto = postService.convertToDtoWithAuthorName(post.get());
             return ResponseEntity.ok(postDto);
         } else {
             return ResponseEntity.notFound().build();
@@ -71,7 +71,7 @@ public class PostController {
     @GetMapping("/university/{university}")
     public ResponseEntity<List<PostDto>> getPostsByUniversity(@PathVariable String university) {
         List<Post> posts = postService.getPostsByUniversity(university);
-        List<PostDto> postDtos = postService.convertToDtoList(posts);
+        List<PostDto> postDtos = postService.convertToDtoListWithAuthorNames(posts);
         return ResponseEntity.ok(postDtos);
     }
 
@@ -79,7 +79,7 @@ public class PostController {
     public ResponseEntity<List<PostDto>> searchPosts(@RequestParam("q") String query) {
         query = query.trim();
         List<Post> posts = postService.searchPosts(query);
-        List<PostDto> postDtos = postService.convertToDtoList(posts);
+        List<PostDto> postDtos = postService.convertToDtoListWithAuthorNames(posts);
         return ResponseEntity.ok(postDtos);
     }
 

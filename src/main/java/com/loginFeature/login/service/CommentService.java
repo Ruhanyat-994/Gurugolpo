@@ -115,9 +115,10 @@ public class CommentService {
         dto.setCreatedAt(comment.getCreatedAt());
         dto.setUpdatedAt(comment.getUpdatedAt());
         
-        // Get author username
+        // Get author information
         Optional<User> author = userRepository.findById(comment.getAuthorId());
         dto.setAuthorUsername(author.map(User::getUsername).orElse("Unknown"));
+        dto.setAuthorName(author.map(User::getFullName).orElse("Anonymous"));
         
         return dto;
     }

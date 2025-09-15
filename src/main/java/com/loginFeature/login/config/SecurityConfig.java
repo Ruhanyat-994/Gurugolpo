@@ -2,7 +2,6 @@ package com.loginFeature.login.config;
 
 import com.loginFeature.login.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -60,9 +60,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/test-password").permitAll()
                         .requestMatchers("/api/auth/debug-bcrypt").permitAll()
                         .requestMatchers("/api/auth/generate-bcrypt").permitAll()
-                        .requestMatchers("/api/posts").permitAll() // Allow viewing posts without auth
+                        .requestMatchers(HttpMethod.GET, "/api/posts").permitAll() // Allow viewing posts without auth
+                        .requestMatchers(HttpMethod.GET, "/api/posts/*").permitAll() // Allow viewing individual posts without auth
+                        .requestMatchers(HttpMethod.GET, "/api/posts/*/votes").permitAll() // Allow viewing post vote counts without auth
                         .requestMatchers("/api/posts/search/**").permitAll()
                         .requestMatchers("/api/posts/university/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/comments/*/votes").permitAll() // Allow viewing comment vote counts without auth
                         .requestMatchers("/api/universities").permitAll() // Allow viewing universities list
                         
                         // Swagger/OpenAPI documentation
@@ -83,7 +86,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/posts/create").hasAnyRole("USER", "MODERATOR", "ADMIN")
                         .requestMatchers("/api/posts/*/edit").hasAnyRole("USER", "MODERATOR", "ADMIN")
                         .requestMatchers("/api/posts/*/delete").hasAnyRole("MODERATOR", "ADMIN") // Only moderators can delete
-                        .requestMatchers("/api/comments/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/comments/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/comments/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/comments/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll() // Allow viewing comments without auth
                         .requestMatchers("/api/votes/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
                         
                         .anyRequest().authenticated()

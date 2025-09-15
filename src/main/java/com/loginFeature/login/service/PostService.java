@@ -188,7 +188,7 @@ public class PostService {
         
         // Get author name
         Optional<User> author = userRepository.findById(post.getAuthorId());
-        dto.setAuthorName(author.map(User::getUsername).orElse("Anonymous"));
+        dto.setAuthorName(author.map(User::getFullName).orElse("Anonymous"));
         
         // Get actual vote counts from VotingService
         try {

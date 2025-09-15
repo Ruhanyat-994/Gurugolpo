@@ -15,6 +15,7 @@ public class CommentDto {
     private String content;
     private Long authorId;
     private String authorUsername;
+    private String authorName; // For display purposes
     private Integer upvotes;
     private Integer downvotes;
     private Integer voteCount;

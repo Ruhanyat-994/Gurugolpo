@@ -1,8 +1,8 @@
 -- Initial data for University Teacher Evaluation Forum
 
 -- Insert default admin user (password: password) - ignore if already exists
-INSERT IGNORE INTO users (email, username, password, university, role, is_active) VALUES
-('admin@university.edu', 'admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Admin', 'ADMIN', TRUE);   
+INSERT IGNORE INTO users (email, username, full_name, password, university, role, is_active) VALUES
+('admin@university.edu', 'admin', 'System Administrator', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Admin', 'ADMIN', TRUE);   
 
 -- Insert system settings - ignore if already exists
 INSERT IGNORE INTO system_settings (setting_key, setting_value, description) VALUES
@@ -11,11 +11,11 @@ INSERT IGNORE INTO system_settings (setting_key, setting_value, description) VAL
 ('max_comments_per_post', '100', 'Maximum number of comments allowed per post');
 
 -- Insert sample universities and users for testing - ignore if already exists
-INSERT IGNORE INTO users (email, username, password, university, role, is_active) VALUES
-('john.doe@mit.edu', 'johndoe', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'MIT', 'STUDENT', TRUE),
-('jane.smith@stanford.edu', 'janesmith', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'Stanford University', 'STUDENT', TRUE),
-('moderator@mit.edu', 'mit_moderator', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'MIT', 'MODERATOR', TRUE),
-('moderator@stanford.edu', 'stanford_moderator', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'Stanford University', 'MODERATOR', TRUE);
+INSERT IGNORE INTO users (email, username, full_name, password, university, role, is_active) VALUES
+('john.doe@mit.edu', 'johndoe', 'John Doe', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'MIT', 'STUDENT', TRUE),
+('jane.smith@stanford.edu', 'janesmith', 'Jane Smith', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'Stanford University', 'STUDENT', TRUE),
+('moderator@mit.edu', 'mit_moderator', 'MIT Moderator', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'MIT', 'MODERATOR', TRUE),
+('moderator@stanford.edu', 'stanford_moderator', 'Stanford Moderator', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'Stanford University', 'MODERATOR', TRUE);
 
 -- Insert sample posts for testing - ignore if already exists
 INSERT IGNORE INTO posts (title, content, author_id, university, status, created_at, updated_at) VALUES
@@ -39,3 +39,16 @@ INSERT IGNORE INTO post_votes (post_id, user_id, vote_type, created_at) VALUES
 (4, 4, 'UPVOTE', NOW()),
 (5, 2, 'UPVOTE', NOW()),
 (5, 3, 'UPVOTE', NOW());
+
+-- Insert sample comments for testing - ignore if already exists
+INSERT IGNORE INTO comments (post_id, author_id, content, upvotes, downvotes, vote_count, created_at, updated_at) VALUES
+(1, 2, 'I completely agree! Google has an amazing culture and the learning opportunities are incredible.', 3, 0, 3, NOW(), NOW()),
+(1, 3, 'Thanks for sharing your experience! What team did you work with?', 1, 0, 1, NOW(), NOW()),
+(1, 4, 'Great post! I am planning to apply for Google next summer.', 2, 0, 2, NOW(), NOW()),
+(2, 2, 'Amazon is definitely challenging but the growth opportunities are worth it.', 2, 1, 1, NOW(), NOW()),
+(2, 3, 'I had a similar experience at Amazon. The pace is intense but you learn so much.', 1, 0, 1, NOW(), NOW()),
+(3, 2, 'Microsoft has great work-life balance, but I agree the projects could be more challenging.', 1, 0, 1, NOW(), NOW()),
+(4, 2, 'Meta is intense but the compensation makes it worth it!', 2, 0, 2, NOW(), NOW()),
+(4, 3, 'The work-life balance at Meta can be tough, but the learning curve is steep.', 1, 0, 1, NOW(), NOW()),
+(5, 2, 'Apple''s design focus is unmatched. The attention to detail is incredible.', 1, 0, 1, NOW(), NOW()),
+(5, 3, 'I love Apple''s design philosophy, but the secrecy can be frustrating sometimes.', 0, 1, -1, NOW(), NOW());

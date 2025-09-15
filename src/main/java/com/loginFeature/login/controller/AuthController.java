@@ -262,6 +262,7 @@ public class AuthController {
             // Create new user
             User newUser = new User();
             newUser.setEmail(registrationDto.getEmail());
+            newUser.setUsername(registrationDto.getEmail()); // Use email as username
             newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
             newUser.setFullName(registrationDto.getFullName());
             newUser.setUniversity(registrationDto.getUniversity());
