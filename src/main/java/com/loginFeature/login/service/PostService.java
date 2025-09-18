@@ -43,6 +43,7 @@ public class PostService {
         post.setContent(postDto.getContent());
         post.setAuthorId(authorId);
         post.setUniversity(user.getUniversity());
+        post.setIsAnonymous(postDto.getIsAnonymous() != null ? postDto.getIsAnonymous() : false);
         
         // Check if post management is enabled
         boolean postManagementEnabled = isPostManagementEnabled();
@@ -163,6 +164,7 @@ public class PostService {
         dto.setUniversity(post.getUniversity());
         dto.setStatus(post.getStatus().name());
         dto.setIsApproved(post.getIsApproved());
+        dto.setIsAnonymous(post.getIsAnonymous());
         dto.setUpvotes(post.getUpvotes());
         dto.setDownvotes(post.getDownvotes());
         dto.setVoteCount(post.getVoteCount());
@@ -186,9 +188,13 @@ public class PostService {
     public PostDto convertToDtoWithAuthorName(Post post) {
         PostDto dto = convertToDto(post);
         
-        // Get author name
-        Optional<User> author = userRepository.findById(post.getAuthorId());
-        dto.setAuthorName(author.map(User::getFullName).orElse("Anonymous"));
+        // Get author name - show "Anonymous" if post is anonymous
+        if (post.getIsAnonymous() != null && post.getIsAnonymous()) {
+            dto.setAuthorName("Anonymous");
+        } else {
+            Optional<User> author = userRepository.findById(post.getAuthorId());
+            dto.setAuthorName(author.map(User::getFullName).orElse("Anonymous"));
+        }
         
         // Get actual vote counts from VotingService
         try {

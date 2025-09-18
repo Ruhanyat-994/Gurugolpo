@@ -26,6 +26,33 @@
   color: white !important;
 }
 
+/* Ensure hero section buttons maintain white text on hover */
+.hero-section .btn,
+.hero-section .btn-primary,
+.hero-section .btn:hover,
+.hero-section .btn-primary:hover,
+.hero-section .btn:focus,
+.hero-section .btn-primary:focus {
+  color: white !important;
+}
+
+.dark .hero-section .btn,
+.dark .hero-section .btn-primary,
+.dark .hero-section .btn:hover,
+.dark .hero-section .btn-primary:hover,
+.dark .hero-section .btn:focus,
+.dark .hero-section .btn-primary:focus {
+  color: white !important;
+}
+
+/* Force white text for all button states in hero section */
+.hero-section button,
+.hero-section button *,
+.hero-section a,
+.hero-section a * {
+  color: white !important;
+}
+
 /* Ensure all home page sections are dark */
 .dark .home-container {
   background-color: var(--bg-primary) !important;
@@ -208,10 +235,10 @@
 }
 
 .posts-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  max-width: 700px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
   width: 100%;
@@ -220,23 +247,23 @@
 /* Large screens - increase max width and gap */
 @media (min-width: 1200px) {
   .posts-grid {
-    max-width: 800px;
+    max-width: 1200px;
     gap: 2rem;
   }
   
   .filters-section {
-    max-width: 800px;
+    max-width: 1200px;
   }
 }
 
 @media (min-width: 1400px) {
   .posts-grid {
-    max-width: 850px;
+    max-width: 1400px;
     gap: 2rem;
   }
   
   .filters-section {
-    max-width: 850px;
+    max-width: 1400px;
   }
 }
 
@@ -266,6 +293,31 @@
 .empty-state p {
   color: var(--text-tertiary);
   margin-bottom: 2rem;
+}
+
+/* Large Tablet - 2 columns */
+@media (max-width: 1024px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+  
+  .filters-section {
+    max-width: 800px;
+  }
+}
+
+/* Small Tablet - 2 columns */
+@media (max-width: 900px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 700px;
+    gap: 1.25rem;
+  }
+  
+  .filters-section {
+    max-width: 700px;
+  }
 }
 
 /* Responsive Design */
@@ -316,6 +368,7 @@
   }
 
   .posts-grid {
+    grid-template-columns: 1fr;
     padding: 0 0.5rem;
     gap: 1rem;
     max-width: 100%;

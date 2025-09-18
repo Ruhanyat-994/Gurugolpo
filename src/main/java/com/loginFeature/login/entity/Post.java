@@ -17,6 +17,7 @@ public class Post {
     private String university;
     private PostStatus status;
     private Boolean isApproved;
+    private Boolean isAnonymous;
     private Integer upvotes;
     private Integer downvotes;
     private Integer voteCount;

@@ -49,6 +49,15 @@ code {
   outline-offset: 2px;
 }
 
+/* Remove focus outlines from buttons and links */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
 /* Selection styles */
 ::selection {
   background-color: #3b82f6;

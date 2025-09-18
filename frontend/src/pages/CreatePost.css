@@ -134,6 +134,12 @@
   border-top: 1px solid #e2e8f0;
 }
 
+/* Remove focus outlines from all buttons in create post */
+.create-post-container button:focus,
+.create-post-container a:focus {
+  outline: none;
+}
+
 .posting-guidelines {
   background: white;
   border-radius: 1rem;

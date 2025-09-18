@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useModal } from '../contexts/ModalContext';
 import { postsAPI } from '../services/api';
 import PostCard from '../components/PostCard';
 import './Home.css';
@@ -14,6 +15,7 @@ const Home = () => {
   const [universities, setUniversities] = useState([]);
 
   const { isAuthenticated } = useAuth();
+  const { showModal } = useModal();
 
   useEffect(() => {
     fetchPosts();
@@ -102,6 +104,19 @@ const Home = () => {
     fetchPosts();
   };
 
+  const openAuthPopup = (mode) => {
+    showModal('authPopup', {
+      mode: mode,
+      onSuccess: (user) => {
+        // Optionally refresh or update state after successful auth
+      }
+    });
+  };
+
+  const handlePostDeleted = (deletedPostId) => {
+    setPosts(prevPosts => prevPosts.filter(post => post.id !== deletedPostId));
+  };
+
   return (
     <div className="home-container">
       <div className="home-header">
@@ -115,11 +130,19 @@ const Home = () => {
             Share ideas, ask questions, and build your academic community.
           </p>
           
-          {isAuthenticated() && (
+          {isAuthenticated() ? (
             <Link to="/create-post" className="btn btn-primary btn-lg">
               <i className="fas fa-plus"></i>
               Create New Post
             </Link>
+          ) : (
+            <button 
+              onClick={() => openAuthPopup('login')} 
+              className="btn btn-primary btn-lg"
+            >
+              <i className="fas fa-plus"></i>
+              Create New Post
+            </button>
           )}
         </div>
 
@@ -171,15 +194,6 @@ const Home = () => {
       </div>
 
       <div className="posts-section">
-        <div className="posts-header">
-          <h2 className="posts-title">
-            <i className="fas fa-comments"></i>
-            Recent Discussions
-            {posts.length > 0 && (
-              <span className="posts-count">({posts.length} posts)</span>
-            )}
-          </h2>
-        </div>
 
         {loading && (
           <div className="loading-container">
@@ -204,11 +218,19 @@ const Home = () => {
                 ? 'Try adjusting your search or filters'
                 : 'Be the first to start a discussion!'}
             </p>
-            {isAuthenticated() && (
+            {isAuthenticated() ? (
               <Link to="/create-post" className="btn btn-primary">
                 <i className="fas fa-plus"></i>
                 Create First Post
               </Link>
+            ) : (
+              <button 
+                onClick={() => openAuthPopup('login')} 
+                className="btn btn-primary"
+              >
+                <i className="fas fa-plus"></i>
+                Create First Post
+              </button>
             )}
           </div>
         )}
@@ -216,11 +238,16 @@ const Home = () => {
         {!loading && !error && posts.length > 0 && (
           <div className="posts-grid">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard 
+                key={post.id} 
+                post={post} 
+                onPostDeleted={handlePostDeleted}
+              />
             ))}
           </div>
         )}
       </div>
+
     </div>
   );
 };

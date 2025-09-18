@@ -92,7 +92,7 @@ body {
 }
 
 /* Ensure all elements inherit dark colors */
-.dark * {
+.dark *:not(.btn):not(.btn *):not(.hero-section):not(.hero-section *) {
   color: var(--text-primary) !important;
 }
 
@@ -129,7 +129,7 @@ body {
 
 /* Ensure all text elements are visible */
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6,
-.dark p, .dark span, .dark div, .dark a, .dark button,
+.dark p, .dark span, .dark div, .dark a,
 .dark input, .dark select, .dark textarea {
   color: var(--text-primary) !important;
 }
@@ -150,6 +150,12 @@ body {
 
 .dark .btn-primary {
   background-color: var(--accent-primary) !important;
+  color: white !important;
+}
+
+/* Ensure button text is always visible on hover */
+.dark .btn:hover,
+.dark .btn-primary:hover {
   color: white !important;
 }
 
@@ -270,6 +276,7 @@ body {
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--accent-hover);
+  color: white;
 }
 
 .btn-secondary {
@@ -372,6 +379,17 @@ body {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Remove focus outlines from all buttons and interactive elements */
+button:focus,
+a:focus,
+.btn:focus,
+.vote-btn:focus,
+.modal-close:focus,
+.navbar-toggle:focus,
+.theme-toggle:focus {
+  outline: none;
 }
 
 .form-textarea {

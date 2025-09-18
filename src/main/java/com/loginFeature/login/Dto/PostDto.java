@@ -19,6 +19,7 @@ public class PostDto {
     private String university;
     private String status;
     private Boolean isApproved;
+    private Boolean isAnonymous;
     private Integer upvotes;
     private Integer downvotes;
     private Integer voteCount;

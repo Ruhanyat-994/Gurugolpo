@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useModal } from '../contexts/ModalContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout, isAdmin, isModerator } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
+  const { showModal } = useModal();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -18,6 +20,17 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const openAuthPopup = (mode) => {
+    showModal('authPopup', {
+      mode: mode,
+      onSuccess: (user) => {
+        // Optionally refresh or update state
+        setIsMenuOpen(false);
+      }
+    });
+    setIsMenuOpen(false);
   };
 
   return (
@@ -79,14 +92,20 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="auth-buttons">
-                <Link to="/login" className="btn btn-outline btn-sm">
+                <button 
+                  onClick={() => openAuthPopup('login')} 
+                  className="btn btn-outline btn-sm"
+                >
                   <i className="fas fa-sign-in-alt"></i>
                   Login
-                </Link>
-                <Link to="/register" className="btn btn-primary btn-sm">
+                </button>
+                <button 
+                  onClick={() => openAuthPopup('register')} 
+                  className="btn btn-primary btn-sm"
+                >
                   <i className="fas fa-user-plus"></i>
                   Register
-                </Link>
+                </button>
               </div>
             )}
           </div>
@@ -113,6 +132,7 @@ const Navbar = () => {
           </button>
         </div>
       </div>
+
     </nav>
   );
 };

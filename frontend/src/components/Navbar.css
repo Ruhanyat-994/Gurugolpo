@@ -8,6 +8,11 @@
   transition: background-color 0.3s ease;
 }
 
+.navbar button:focus,
+.navbar a:focus {
+  outline: none;
+}
+
 /* Ensure navbar is always visible in dark mode */
 .dark .navbar {
   background: var(--bg-secondary) !important;
@@ -36,6 +41,10 @@
 
 .navbar-brand:hover {
   color: var(--accent-hover);
+}
+
+.navbar-brand:focus {
+  outline: none;
 }
 
 .navbar-brand i {
@@ -71,6 +80,10 @@
   background-color: var(--bg-tertiary);
 }
 
+.nav-link:focus {
+  outline: none;
+}
+
 .navbar-auth {
   display: flex;
   align-items: center;
@@ -80,6 +93,10 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.auth-buttons button:focus {
+  outline: none;
 }
 
 .user-menu {
@@ -114,6 +131,11 @@
   gap: 0.5rem;
 }
 
+.user-actions button:focus,
+.user-actions a:focus {
+  outline: none;
+}
+
 .navbar-controls {
   display: flex;
   align-items: center;
@@ -140,6 +162,10 @@
   color: var(--text-secondary);
 }
 
+.theme-toggle:focus {
+  outline: none;
+}
+
 .navbar-toggle {
   display: none;
   flex-direction: column;
@@ -148,6 +174,10 @@
   cursor: pointer;
   padding: 0.5rem;
   gap: 0.25rem;
+}
+
+.navbar-toggle:focus {
+  outline: none;
 }
 
 .hamburger {

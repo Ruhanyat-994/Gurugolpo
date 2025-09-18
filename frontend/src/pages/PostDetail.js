@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useModal } from '../contexts/ModalContext';
 import { postsAPI, commentsAPI, votingAPI } from '../services/api';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -11,6 +12,7 @@ const PostDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { showModal } = useModal();
   
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
@@ -48,8 +50,12 @@ const PostDetail = () => {
 
   const handleVote = async (type) => {
     if (!isAuthenticated()) {
-      // Show login modal or redirect
-      navigate('/login', { state: { from: { pathname: `/post/${id}` } } });
+      showModal('authPopup', {
+        mode: 'login',
+        onSuccess: () => {
+          // After successful login, user can try voting again
+        }
+      });
       return;
     }
 
@@ -68,7 +74,12 @@ const PostDetail = () => {
 
   const handleCommentVote = async (commentId, type) => {
     if (!isAuthenticated()) {
-      navigate('/login', { state: { from: { pathname: `/post/${id}` } } });
+      showModal('authPopup', {
+        mode: 'login',
+        onSuccess: () => {
+          // After successful login, user can try voting on comments again
+        }
+      });
       return;
     }
 
@@ -87,7 +98,12 @@ const PostDetail = () => {
 
   const handleSubmitComment = async () => {
     if (!isAuthenticated()) {
-      navigate('/login', { state: { from: { pathname: `/post/${id}` } } });
+      showModal('authPopup', {
+        mode: 'login',
+        onSuccess: () => {
+          // After successful login, user can try commenting again
+        }
+      });
       return;
     }
 
@@ -225,7 +241,12 @@ const PostDetail = () => {
               <button
                 onClick={() => {
                   if (!isAuthenticated()) {
-                    navigate('/login', { state: { from: { pathname: `/post/${id}` } } });
+                    showModal('authPopup', {
+                      mode: 'login',
+                      onSuccess: () => {
+                        // After successful login, user can share
+                      }
+                    });
                   }
                 }}
                 className="btn btn-outline btn-sm"
@@ -309,7 +330,7 @@ const PostDetail = () => {
           <div className="login-prompt">
             <div className="alert alert-info">
               <i className="fas fa-info-circle"></i>
-              Please <button onClick={() => navigate('/login')} className="auth-link">sign in</button> to post comments.
+              Please <button onClick={() => showModal('authPopup', { mode: 'login' })} className="auth-link">sign in</button> to post comments.
             </div>
           </div>
         )}
@@ -332,6 +353,7 @@ const PostDetail = () => {
           )}
         </div>
       </div>
+
     </div>
   );
 };

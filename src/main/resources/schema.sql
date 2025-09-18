@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS posts (
     university VARCHAR(255) NOT NULL,
     status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
     is_approved BOOLEAN DEFAULT FALSE,
+    is_anonymous BOOLEAN DEFAULT FALSE,
     upvotes INT DEFAULT 0,
     downvotes INT DEFAULT 0,
     vote_count INT DEFAULT 0,

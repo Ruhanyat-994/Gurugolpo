@@ -36,6 +36,48 @@
   gap: 1rem;
 }
 
+.post-author-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.action-btn:focus {
+  outline: none;
+}
+
+.edit-btn {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.edit-btn:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #2563eb;
+}
+
+.delete-btn {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+}
+
 .company-role {
   display: flex;
   align-items: center;
@@ -217,14 +259,38 @@
   cursor: not-allowed;
 }
 
-.vote-btn.upvote.upvoted {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: var(--accent-primary);
+.vote-btn:focus {
+  outline: none;
 }
 
-.vote-btn.downvote.downvoted {
+.vote-btn.upvote.voted {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+}
+
+.vote-btn.downvote.voted {
   background-color: rgba(239, 68, 68, 0.15);
   color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.vote-btn.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vote-btn.loading i {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .comment-action {
@@ -251,21 +317,6 @@
   background-color: var(--bg-secondary);
 }
 
-.conversation-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: var(--accent-primary);
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.8125rem;
-  font-weight: 500;
-}
-
-.conversation-btn:hover:not(:disabled) {
-  background-color: var(--accent-hover);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -314,10 +365,6 @@
     gap: 1rem;
   }
 
-  .conversation-btn {
-    width: 100%;
-    justify-content: center;
-  }
 }
 
 @media (max-width: 480px) {
@@ -343,3 +390,4 @@
     gap: 0.75rem;
   }
 }
+

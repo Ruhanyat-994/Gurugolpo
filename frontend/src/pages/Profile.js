@@ -31,6 +31,10 @@ const Profile = () => {
     }
   };
 
+  const handlePostDeleted = (deletedPostId) => {
+    setPosts(prevPosts => prevPosts.filter(post => post.id !== deletedPostId));
+  };
+
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case 'ADMIN':
@@ -138,7 +142,11 @@ const Profile = () => {
               {!loading && !error && posts.length > 0 && (
                 <div className="posts-grid">
                   {posts.map((post) => (
-                    <PostCard key={post.id} post={post} />
+                    <PostCard 
+                      key={post.id} 
+                      post={post} 
+                      onPostDeleted={handlePostDeleted}
+                    />
                   ))}
                 </div>
               )}
@@ -155,7 +163,7 @@ const Profile = () => {
               <div className="activity-stats">
                 <div className="stat-card">
                   <div className="stat-icon">
-                    <i className="fas fa-comments"></i>
+                    <i className="fas fa-file-alt"></i>
                   </div>
                   <div className="stat-content">
                     <div className="stat-number">{posts.length}</div>
@@ -177,7 +185,7 @@ const Profile = () => {
 
                 <div className="stat-card">
                   <div className="stat-icon">
-                    <i className="fas fa-eye"></i>
+                    <i className="fas fa-thumbs-down"></i>
                   </div>
                   <div className="stat-content">
                     <div className="stat-number">

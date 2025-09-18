@@ -2,12 +2,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ModalProvider } from './contexts/ModalContext';
 import Navbar from './components/Navbar';
+import GlobalModals from './components/GlobalModals';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import PostDetail from './pages/PostDetail';
 import CreatePost from './pages/CreatePost';
+import EditPost from './pages/EditPost';
 import AdminDashboard from './pages/AdminDashboard';
 import ModeratorDashboard from './pages/ModeratorDashboard';
 import Profile from './pages/Profile';
@@ -101,6 +104,14 @@ function AppContent() {
               } 
             />
             <Route 
+              path="/edit-post/:id" 
+              element={
+                <ProtectedRoute>
+                  <EditPost />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/profile" 
               element={
                 <ProtectedRoute>
@@ -133,6 +144,7 @@ function AppContent() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+        <GlobalModals />
       </Router>
     </div>
   );
@@ -142,7 +154,9 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppContent />
+        <ModalProvider>
+          <AppContent />
+        </ModalProvider>
       </AuthProvider>
     </ThemeProvider>
   );

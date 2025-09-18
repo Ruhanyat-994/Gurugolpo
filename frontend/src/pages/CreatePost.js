@@ -10,6 +10,7 @@ const CreatePost = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
+    isAnonymous: false,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -127,6 +128,22 @@ const CreatePost = () => {
             <div className="character-count">
               {formData.content.replace(/<[^>]*>/g, '').length}/10000 characters
             </div>
+          </div>
+
+          <div className="form-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="isAnonymous"
+                checked={formData.isAnonymous}
+                onChange={(e) => handleChange('isAnonymous', e.target.checked)}
+                disabled={loading}
+              />
+              <span className="checkbox-text">
+                <i className="fas fa-user-secret"></i>
+                Post anonymously (your name will be hidden)
+              </span>
+            </label>
           </div>
 
           <div className="form-actions">
