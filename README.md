@@ -1,6 +1,6 @@
-# University Teacher Evaluation Forum
+# End-to-End University Affaires Blogging System 
 
-A comprehensive backend system for a university teacher evaluation forum built with Spring Boot, featuring role-based access control, post management, voting system, and admin/moderator panels.
+A comprehensive backend system for a university affaires and teacher evaluation forum built with Spring Boot, featuring role-based access control, post management, voting system, and admin/moderator panels.
 
 ## Features
 
